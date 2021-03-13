@@ -1,1 +1,2 @@
-# core-framework
+# Mixi Gaming: core-platform
+

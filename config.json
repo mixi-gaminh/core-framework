@@ -1,0 +1,56 @@
+{
+  "context": {
+    "timeout": 2
+  },
+  "redis": {
+    "url": "203.162.141.11:2222",
+    "Password": "",
+    "DB": 0,
+    "max_clients": 100,
+    "min_idle": 10
+  },
+  "kafka": {
+    "active": "true",
+    "addr": "broker",
+    "groupID": "myGroup",
+    "autoOffsetReset": "earliest",
+    "maxPollIntervalms": "300000",
+    "sessionTimeoutms": "10000",
+    "messageMaxBytes": "200000000",
+    "pool_max_connection": "20"
+  },
+  "nats": {
+    "active": "true",
+    "url": "nats://203.162.141.11:14222",
+    "queue_name": "fs",
+    "request_subject": "fs_request.>",
+    "reply_subject": "fs_reply",
+    "queue_name_stream": "fs_stream",
+    "request_stream_subject": "fs_request_stream.>",
+    "reply_stream_subject": "fs_reply_stream"
+  },
+  "mongodb": {
+    "url": "203.162.141.11:27017",
+    "dbname": "vnpt_business_platform",
+    "username": "root",
+    "password": "VL@gt$q+75#UWNyx"
+  },
+  "centrifugo": {
+    "url": "http://203.162.141.11:8000"
+  },
+  "centrifugoWS": {
+    "url": "ws://203.162.141.11:8000/connection/websocket?format=protobuf"
+  },
+  "minio": {
+    "host": "https://203.162.141.37:9000",
+    "minioEndpoint": "203.162.141.37:9000",
+    "minioAccessKeyID": "minioadmin",
+    "minioSecretAccessKey": "minioadmin",
+    "minioUseSSL": false,
+    "minioLocation": "vn-hcm-1"
+  },
+  "domain": {
+    "url": "https://sme-dev.vdc2.com.vn",
+    "storage_prefix": "storage"
+  }
+}
