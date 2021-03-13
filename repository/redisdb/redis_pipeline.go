@@ -2,8 +2,9 @@ package redis
 
 import (
 	"context"
-	"log"
 	"time"
+
+	logger "github.com/mixi-gaminh/core-framework/logs"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -41,7 +42,7 @@ func (c *Cache) SaveRecordPipeline(ctx context.Context, userID, deviceID, bucket
 	_, err0 := pipe0.Exec(ctx)
 	if err0 != nil {
 		// Rollback when Pipeline Failed
-		log.Println(err0)
+		logger.ERROR(err0)
 		redisJSONWrite0.ZRem(ctx, "BM"+"$"+userID+"$"+deviceID+"$"+bucketID, redisKey)
 		redisJSONWrite0.ZRem(ctx, "all$"+userID, redisKey)
 		redisJSONWrite0.Del(ctx, redisKey)
@@ -91,7 +92,7 @@ func (c *Cache) DeleteRecordsPipeline(ctx context.Context, userID, deviceID, buc
 // 	_, err0 := pipe0.Exec(ctx)
 // 	if err0 != nil {
 // 		// Rollback when Pipeline Failed
-// 		log.Println(err0)
+// 		logger.ERROR(err0)
 // 		oldBodyBytes, err := json.Marshal(oldData)
 // 		if err != nil {
 // 			oldBodyBytes = nil

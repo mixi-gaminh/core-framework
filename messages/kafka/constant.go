@@ -1,5 +1,7 @@
 package kafka
 
+import logger "github.com/mixi-gaminh/core-framework/logs"
+
 // KafkaMQ - KafkaMQ
 var KafkaMQ Kafka
 
@@ -20,7 +22,6 @@ type Kafka struct {
 
 // KafkaConstructor - KafkaConstructor
 func (k *Kafka) KafkaConstructor(_active, _kafkaURL, _afkaGroupID, _kafkaAutoOffsetReset, _kafkaMaxPollIntervalms, _kafkaSessionTimeoutms, _kafkaMessageMaxBytes string) {
-
 	if _active == "true" {
 		k.KafkaURL = _kafkaURL
 		k.KafkaGroupID = _afkaGroupID
@@ -29,4 +30,7 @@ func (k *Kafka) KafkaConstructor(_active, _kafkaURL, _afkaGroupID, _kafkaAutoOff
 		k.KafkaSessionTimeoutms = _kafkaSessionTimeoutms
 		k.KafkaMessageMaxBytes = _kafkaMessageMaxBytes
 	}
+	logger.Constructor()
+	logger.NewLogger()
+	logger.INFO("Kafka Constructor Successfull")
 }

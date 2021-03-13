@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	logger "github.com/mixi-gaminh/core-framework/logs"
+
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -16,7 +18,7 @@ func (c *Mgo) SortInMongo(DBName string, collection, sortByField string) (interf
 	var result []bson.M
 	err := selectSession().DB(DBName).C(collection).Find(bson.M{}).Sort(sortByField).All(&result)
 	if err != nil || len(result) == 0 {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, err
 	}
 	return result, nil
@@ -28,13 +30,13 @@ func (c *Mgo) LimitSortInMongo(DBName string, collection, sortByField string, li
 	if sortByField == "" {
 		err := selectSession().DB(DBName).C(collection).Find(bson.M{}).Limit(limit).All(&result)
 		if err != nil || len(result) == 0 {
-			log.Println(err)
+			logger.ERROR(err)
 			return nil, err
 		}
 	} else {
 		err := selectSession().DB(DBName).C(collection).Find(bson.M{}).Sort(sortByField).All(&result)
 		if err != nil || len(result) == 0 {
-			log.Println(err)
+			logger.ERROR(err)
 			return nil, err
 		}
 	}
@@ -85,7 +87,7 @@ func (c *Mgo) SearchManyConditionInMongo(DBName string, bucket, fieldSort, order
 
 	err := selectSession().DB(DBName).C(bucket).Find(bson.M{"$and": andQuery}).Sort(order + fieldSort).All(&retValue)
 	if err != nil || len(retValue) == 0 {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, err
 	}
 
@@ -141,12 +143,12 @@ func (c *Mgo) SearchManyConditionInMongoWithPagging(DBName string, collection, f
 	skip := (page - 1) * limit
 	total, err := selectSession().DB(DBName).C(collection).Find(bson.M{"$and": andQuery}).Count()
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, 0, err
 	}
 	err = selectSession().DB(DBName).C(collection).Find(bson.M{"$and": andQuery}).Sort(order + fieldSort).Skip(skip).Limit(limit).All(&retValue)
 	if err != nil || len(retValue) == 0 {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, 0, err
 	}
 
@@ -202,12 +204,12 @@ func (c *Mgo) SearchManyConditionInMongoWithOrCondition(DBName string, collectio
 	skip := (page - 1) * limit
 	total, err := selectSession().DB(DBName).C(collection).Find(bson.M{"$or": andQuery}).Count()
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, 0, err
 	}
 	err = selectSession().DB(DBName).C(collection).Find(bson.M{"$or": andQuery}).Sort(order + fieldSort).Skip(skip).Limit(limit).All(&retValue)
 	if err != nil || len(retValue) == 0 {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, 0, err
 	}
 
@@ -256,12 +258,12 @@ func (c *Mgo) SearchNumericManyConditionWithPagging(DBName string, collection, f
 	skip := (page - 1) * limit
 	total, err := selectSession().DB(DBName).C(collection).Find(bson.M{"$and": andQuery}).Count()
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, 0, err
 	}
 	err = selectSession().DB(DBName).C(collection).Find(bson.M{"$and": andQuery}).Sort(order + fieldSort).Skip(skip).Limit(limit).All(&retValue)
 	if err != nil || len(retValue) == 0 {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, 0, err
 	}
 
@@ -274,7 +276,7 @@ func (c *Mgo) SearchInMongo(DBName string, collection, field, value string) (int
 	selector := bson.M{field: bson.M{"$regex": value, "$options": "i"}}
 	err := selectSession().DB(DBName).C(collection).Find(selector).All(&retValue)
 	if err != nil || len(retValue) == 0 {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, false
 	}
 
@@ -287,13 +289,13 @@ func (c *Mgo) SearchInMongoByRange(DBName string, collection string, bodyBytes [
 	json.Unmarshal(bodyBytes, &bodyMap)
 
 	if bodyMap["field"] == "" {
-		log.Println("ERR: Field didn't Fill")
+		logger.ERROR("ERR: Field didn't Fill")
 		return nil, false
 	}
 	field := bodyMap["field"]
 
 	if bodyMap["gte"] == "" && bodyMap["gt"] == "" && bodyMap["lte"] == "" && bodyMap["lt"] == "" {
-		log.Println("ERR: GTE, LTE, GT, LT didn't Fill")
+		logger.ERROR("ERR: GTE, LTE, GT, LT didn't Fill")
 		return nil, false
 	}
 
@@ -313,7 +315,7 @@ func (c *Mgo) SearchInMongoByRange(DBName string, collection string, bodyBytes [
 			} else {
 				valInt, err := strconv.ParseInt(val, 10, 64)
 				if err != nil {
-					log.Println(err)
+					logger.ERROR(err)
 					return nil, false
 				}
 				selector = bson.M{field: bson.M{"$" + key: valInt}}
@@ -326,7 +328,7 @@ func (c *Mgo) SearchInMongoByRange(DBName string, collection string, bodyBytes [
 	var retValue []bson.M
 	err := selectSession().DB(DBName).C(collection).Find(bson.M{"$and": andQuery}).All(&retValue)
 	if err != nil || len(retValue) == 0 {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, false
 	}
 
@@ -346,14 +348,14 @@ func (c *Mgo) PaginateWithSkip(DBName string, collection string, page, limit int
 
 	total, err := selectSession().DB(DBName).C(collection).Find(nil).Count()
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, 0, err
 	}
 
 	records := make([]interface{}, Limit)
 	err = selectSession().DB(DBName).C(collection).Find(nil).Sort("_id").Skip(skip).Limit(limit).All(&records)
 	if err != nil || len(records) == 0 {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, 0, err
 	}
 	rFirstMap := records[0].(bson.M)
@@ -371,7 +373,7 @@ func (c *Mgo) MatchDataByLogicClauseAndSort(DBName string, collection string, qu
 	skip := (page - 1) * limit
 	total, err := selectSession().DB(DBName).C(collection).Find(query).Count()
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, 0, err
 	}
 
@@ -382,7 +384,7 @@ func (c *Mgo) MatchDataByLogicClauseAndSort(DBName string, collection string, qu
 	}
 
 	if err != nil || len(ret) == 0 {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, 0, err
 	}
 

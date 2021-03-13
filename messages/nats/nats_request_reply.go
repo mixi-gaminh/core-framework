@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	logger "github.com/mixi-gaminh/core-framework/logs"
 	"github.com/nats-io/nats.go"
 )
 
@@ -46,6 +47,9 @@ func (n *NATS) NATSConstructor(_memberID, _typeReqRepl, _active, _natsURL, _queu
 			}
 		}
 	}
+	logger.Constructor()
+	logger.NewLogger()
+	logger.INFO("NATS Constructor Successfull")
 }
 
 // SetupConnOptions - SetupConnOptions

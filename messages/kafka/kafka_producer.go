@@ -1,8 +1,7 @@
 package kafka
 
 import (
-	"log"
-
+	logger "github.com/mixi-gaminh/core-framework/logs"
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
@@ -17,7 +16,7 @@ func (k *Kafka) InitProducer(kafkaURL string) (*kafka.Producer, error) {
 
 // CloseProducer - CloseProducer
 func (k *Kafka) CloseProducer(producer *kafka.Producer) {
-	log.Println("Closed Producer")
+	logger.INFO("Closed Producer")
 	defer producer.Close()
 }
 
@@ -29,7 +28,7 @@ func (k *Kafka) PublishMessage(p *kafka.Producer, topic string, partition int32,
 		Value:          []byte(value),
 	}, nil)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	p.Flush(10000)

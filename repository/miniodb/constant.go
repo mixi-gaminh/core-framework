@@ -3,6 +3,7 @@ package minio
 import (
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
+	logger "github.com/mixi-gaminh/core-framework/logs"
 )
 
 // MinioDB - exported as symbol named "MinioDB"
@@ -43,6 +44,7 @@ func (c *FileStorage) FileStorageConstructor(_minIOHost, _minioEndpoint, _minioA
 		panic(err)
 	}
 	minioClient = _minioClient
+	logger.NewLogger()
 }
 
 const minioAlias string = "vnptminio"

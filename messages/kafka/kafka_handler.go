@@ -1,8 +1,7 @@
 package kafka
 
 import (
-	"log"
-
+	logger "github.com/mixi-gaminh/core-framework/logs"
 	"gopkg.in/confluentinc/confluent-kafka-go.v1/kafka"
 )
 
@@ -11,7 +10,7 @@ func (k *Kafka) KafkaPublishSave(producer *kafka.Producer, collection, record, d
 	keyMsgKafka := collection + "," + record
 	valueMsgKafka := data
 	if err := k.PublishMessage(producer, producerSaveCmdTopic, 0, keyMsgKafka, valueMsgKafka); err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	return nil
@@ -22,7 +21,7 @@ func (k *Kafka) KafkaPublishUpdate(producer *kafka.Producer, collection, record,
 	keyMsgKafka := collection + "," + record
 	valueMsgKafka := data
 	if err := k.PublishMessage(producer, producerUpdateCmdTopic, 0, keyMsgKafka, valueMsgKafka); err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	return nil
@@ -33,7 +32,7 @@ func (k *Kafka) KafkaPublishDelete(producer *kafka.Producer, collection, record 
 	keyMsgKafka := collection
 	valueMsgKafka := record
 	if err := k.PublishMessage(producer, producerDeleteCmdTopic, 0, keyMsgKafka, valueMsgKafka); err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	return nil
@@ -44,7 +43,7 @@ func (k *Kafka) KafkaPublishDrop(producer *kafka.Producer, key, value string) er
 	keyMsgKafka := key
 	valueMsgKafka := value
 	if err := k.PublishMessage(producer, producerDropCmdTopic, 0, keyMsgKafka, valueMsgKafka); err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	return nil
@@ -56,7 +55,7 @@ func (k *Kafka) KafkaPublishES(producer *kafka.Producer, topic, header, data str
 	keyMsgKafka := header
 	valueMsgKafka := data
 	if err := k.PublishMessage(producer, consumerTopic, 0, keyMsgKafka, valueMsgKafka); err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	return nil

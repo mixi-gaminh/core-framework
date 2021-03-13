@@ -3,15 +3,16 @@ package queue
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"strings"
+
+	logger "github.com/mixi-gaminh/core-framework/logs"
 )
 
 // Save - Save
 func (q *Queue) Save(ctx context.Context, msg []string) {
 	msgArr := strings.Split(msg[0], ",")
 	if !TryLenArray(msgArr, 2) {
-		log.Println("MongoDB Consumer Cannot Storing: \nKey: " + msg[0] + "\nValue: " + msg[1])
+		logger.ERROR("MongoDB Consumer Cannot Storing: \nKey: " + msg[0] + "\nValue: " + msg[1])
 		return
 	}
 
@@ -28,7 +29,7 @@ func (q *Queue) Save(ctx context.Context, msg []string) {
 
 	err := json.Unmarshal([]byte(bodyData), &persistData)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return
 	}
 	kArr := strings.Split(collection, "@")
@@ -48,14 +49,14 @@ func (q *Queue) Save(ctx context.Context, msg []string) {
 	db.Delete(ctx, keyRecordInHash)
 	db.HDel(ctx, "all$"+kArr[1], keyRecordInHash)
 
-	log.Println("MongoDB Consumer Stored: \nData: " + bodyData + "\nRecord ID: " + record + "\nCollection: " + collection)
+	logger.INFO("MongoDB Consumer Stored: \nData: " + bodyData + "\nRecord ID: " + record + "\nCollection: " + collection)
 }
 
 // Update - Update
 func (q *Queue) Update(ctx context.Context, msg []string) {
 	msgArr := strings.Split(msg[0], ",")
 	if !TryLenArray(msgArr, 2) {
-		log.Println("MongoDB Consumer Cannot Storing: \nKey: " + msg[0] + "\nValue: " + msg[1])
+		logger.ERROR("MongoDB Consumer Cannot Storing: \nKey: " + msg[0] + "\nValue: " + msg[1])
 		return
 	}
 
@@ -71,7 +72,7 @@ func (q *Queue) Update(ctx context.Context, msg []string) {
 
 	err := json.Unmarshal([]byte(bodyData), &persistData)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return
 	}
 	kArr := strings.Split(collection, "@")
@@ -93,7 +94,7 @@ func (q *Queue) Update(ctx context.Context, msg []string) {
 	db.Delete(ctx, keyRecordInHash)
 	db.HDel(ctx, "all$"+kArr[1], keyRecordInHash)
 
-	log.Println("MongoDB Consumer Updated: \nData: " + bodyData + "\nRecord ID: " + record + "\nCollection: " + collection)
+	logger.INFO("MongoDB Consumer Updated: \nData: " + bodyData + "\nRecord ID: " + record + "\nCollection: " + collection)
 	go publishDoneActionEvent(kArr[1], kArr[2], kArr[3], record, "UPDATE")
 }
 
@@ -108,10 +109,10 @@ func (q *Queue) Delete(ctx context.Context, msg []string) {
 	keyRecordInHash := kArr[1] + "$" + kArr[2] + "$" + kArr[3] + "$" + record
 
 	mgodb.DeleteInMongoMQ(dbName, collection, record)
-	log.Println("MongoDB Consumer Deleted: \nRecord: " + record + "\nCollection: " + collection)
+	logger.INFO("MongoDB Consumer Deleted: \nRecord: " + record + "\nCollection: " + collection)
 
 	mgodb.DeleteInMongoMQ(dbName, "all@"+kArr[1], keyRecordInHash)
-	log.Println("MongoDB Consumer Deleted: \nRecord: " + keyRecordInHash + "\nCollection: " + "all@" + kArr[1])
+	logger.INFO("MongoDB Consumer Deleted: \nRecord: " + keyRecordInHash + "\nCollection: " + "all@" + kArr[1])
 
 	go publishDoneActionEvent(kArr[1], kArr[2], kArr[3], record, "DELETE")
 }
@@ -122,13 +123,13 @@ func (q *Queue) Drop(ctx context.Context, msg []string) {
 	if key == "Drop" {
 		collection := msg[1]
 		mgodb.DropCollectionInMongoMQ(dbName, collection)
-		log.Println("MongoDB Consumer Dropped: \nCollection: " + collection)
+		logger.INFO("MongoDB Consumer Dropped: \nCollection: " + collection)
 	} else if key == "DropMany" {
 		collections := strings.Split(msg[1], ",")
 		var listCollection []string
 		listCollection = append(listCollection, collections...)
 
 		mgodb.DropManyCollectionInMongoMQ(dbName, listCollection)
-		log.Println("MongoDB Consumer Dropped Many: \nCollection: " + msg[1])
+		logger.INFO("MongoDB Consumer Dropped Many: \nCollection: " + msg[1])
 	}
 }

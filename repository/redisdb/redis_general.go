@@ -106,10 +106,6 @@ func (c *Cache) Get(ctx context.Context, key string) (string, error) {
 func (c *Cache) Exists(ctx context.Context, key string) bool {
 	ret := redisClientRead0.Exists(ctx, key).Val()
 	return ret != 0
-	// if ret != 0 {
-	// 	return true
-	// }
-	// return false
 }
 
 //SetNXExpire - Set NX a value with key to Redis DB with ExpireTime (Second)

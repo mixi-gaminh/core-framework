@@ -1,11 +1,11 @@
 package mongo
 
 import (
-	"log"
 	"math/rand"
 	"os"
 	"time"
 
+	logger "github.com/mixi-gaminh/core-framework/logs"
 	"gopkg.in/mgo.v2"
 )
 
@@ -45,15 +45,18 @@ func (c *Mgo) MongoDBConstructor(MongoHost []string, username, password string) 
 		}
 		_db, err := mgo.DialWithInfo(mongoDBDialInfo)
 		if err != nil {
-			log.Println("MONGO ESTABLISH CONNECTION ERROR: ", err)
+			logger.ERROR("MONGO ESTABLISH CONNECTION ERROR: ", err)
 			os.Exit(-1)
 		}
 		db[i] = _db
 	}
 	if err := c.Ping(); err != nil {
-		log.Println("MONGO PING ERROR: ", err)
+		logger.ERROR("MONGO PING ERROR: ", err)
 		os.Exit(-1)
 	}
+	logger.Constructor()
+	logger.NewLogger()
+	logger.INFO("MongoDB Constructor Successfull")
 }
 
 // Close - Close

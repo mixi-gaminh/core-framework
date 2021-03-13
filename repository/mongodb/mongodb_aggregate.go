@@ -2,9 +2,9 @@ package mongo
 
 import (
 	"fmt"
-	"log"
 	"reflect"
 	"strings"
+	logger "github.com/mixi-gaminh/core-framework/logs"
 
 	model "github.com/mixi-gaminh/core-framework/model/mongodb"
 	"gopkg.in/mgo.v2/bson"
@@ -100,7 +100,7 @@ func (c *Mgo) LookUpInnerJoin(DBName string, userID, deviceID string, innerJoin 
 	var resp []interface{}
 	err := pipe.All(&resp)
 	if err != nil {
-		log.Println("Errored: ", err)
+		logger.ERROR("Errored: ", err)
 		return nil, err
 	}
 	return resp, nil
@@ -162,7 +162,7 @@ func (c *Mgo) GetTotalInnerJoin(DBName string, userID, deviceID string, innerJoi
 	var resp []interface{}
 	err := pipe.All(&resp)
 	if err != nil {
-		log.Println("Errored: ", err)
+		logger.ERROR("Errored: ", err)
 		return nil, err
 	}
 
@@ -174,7 +174,7 @@ func handlerFilter(data map[string]interface{}) (bson.M, error) {
 	values := make([]string, 0, len(data))
 	for f, v := range data {
 		if v == nil {
-			log.Println("Filtering Value can not be nil")
+			logger.ERROR("Filtering Value can not be nil")
 			return nil, fmt.Errorf("FILTERING_VALUE_NIL")
 		}
 		switch reflect.TypeOf(v).Kind() {

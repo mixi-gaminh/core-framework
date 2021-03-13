@@ -3,9 +3,10 @@ package queue
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"strings"
 	"time"
+
+	logger "github.com/mixi-gaminh/core-framework/logs"
 )
 
 // SynchronizeEvent - SynchronizeEvent
@@ -13,7 +14,7 @@ func (q *Queue) SynchronizeEvent(ctx context.Context, memberID string) {
 	time.Sleep(20 * time.Second)
 	for {
 		if isLeader(ctx, memberID) {
-			log.Println("I'm a LEADER MEMBERSHIP")
+			logger.INFO("I'm a LEADER MEMBERSHIP")
 			db.Save(ctx)
 			synchronizeRedisToMongo(ctx)
 		}
@@ -21,12 +22,12 @@ func (q *Queue) SynchronizeEvent(ctx context.Context, memberID string) {
 	}
 }
 func synchronizeRedisToMongo(ctx context.Context) {
-	log.Println("Starting Synchronize Redis to MongoDB...")
+	logger.INFO("Starting Synchronize Redis to MongoDB...")
 	syncDeviceMgntHandler(ctx)
 	syncBucketMgntHandler(ctx)
 	syncRecordMgntHandler(ctx)
 	syncAPNDeviceMgntHandler(ctx)
-	log.Println("Done Synchronize Redis to MongoDB")
+	logger.INFO("Done Synchronize Redis to MongoDB")
 }
 
 func syncRecordMgntHandler(ctx context.Context) {
@@ -37,7 +38,7 @@ func syncRecordMgntHandler(ctx context.Context) {
 	for _, k := range keys {
 		m, err := db.HGetAll(ctx, k)
 		if err != nil {
-			log.Println("GET ALL RECORD: ", err)
+			logger.INFO("GET ALL RECORD: ", err)
 			continue
 		}
 		for k, v := range m {
@@ -53,7 +54,7 @@ func syncRecordMgntHandler(ctx context.Context) {
 			persistData := make(map[string]interface{})
 			err := json.Unmarshal([]byte(v), &persistData)
 			if err != nil {
-				log.Println(err)
+				logger.ERROR(err)
 				return
 			}
 			delete(persistData, "_id")
@@ -61,7 +62,7 @@ func syncRecordMgntHandler(ctx context.Context) {
 			mgodb.SaveMongo(dbName, "all@"+kArr[1], keyRecordInHash, persistData)
 		}
 	}
-	log.Println("Sync Record Management table Finish")
+	logger.INFO("Sync Record Management table Finish")
 }
 
 func syncBucketMgntHandler(ctx context.Context) {
@@ -85,12 +86,12 @@ func syncBucketMgntHandler(ctx context.Context) {
 		persistData := make(map[string]interface{})
 		err = json.Unmarshal([]byte(v), &persistData)
 		if err != nil {
-			log.Println(err)
+			logger.ERROR(err)
 			return
 		}
 		mgodb.SaveMongo(dbName, collection, record, persistData)
 	}
-	log.Println("Sync Bucket Management table Finish")
+	logger.INFO("Sync Bucket Management table Finish")
 }
 
 func syncDeviceMgntHandler(ctx context.Context) {
@@ -118,13 +119,13 @@ func syncDeviceMgntHandler(ctx context.Context) {
 			persistData := make(map[string]interface{})
 			err = json.Unmarshal([]byte(v), &persistData)
 			if err != nil {
-				log.Println(err)
+				logger.ERROR(err)
 				continue
 			}
 			mgodb.SaveMongo(dbName, userID, kDM, persistData)
 		}
 	}
-	log.Println("Sync Device Management table Finish")
+	logger.INFO("Sync Device Management table Finish")
 }
 
 func syncAPNDeviceMgntHandler(ctx context.Context) {
@@ -135,7 +136,7 @@ func syncAPNDeviceMgntHandler(ctx context.Context) {
 	for _, k := range keys {
 		v, err := db.ReJSONGetString(ctx, k, ".")
 		if err != nil {
-			log.Println(err)
+			logger.ERROR(err)
 			continue
 		}
 		k = strings.ReplaceAll(k, "$", "@")
@@ -148,18 +149,18 @@ func syncAPNDeviceMgntHandler(ctx context.Context) {
 		persistData := make(map[string]interface{})
 		err = json.Unmarshal([]byte(v), &persistData)
 		if err != nil {
-			log.Println(err)
+			logger.ERROR(err)
 			return
 		}
 		mgodb.SaveMongo(dbName, collection, record, persistData)
 	}
-	log.Println("Sync APN Management table Finish")
+	logger.INFO("Sync APN Management table Finish")
 }
 
 func isLeader(ctx context.Context, memberMQID string) bool {
 	v, err := db.Get(ctx, memberMQID)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return false
 	}
 	if v == "leader" {

@@ -2,9 +2,9 @@ package mongo
 
 import (
 	"encoding/json"
-	"log"
 	"strings"
 
+	logger "github.com/mixi-gaminh/core-framework/logs"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -14,7 +14,7 @@ func (c *Mgo) SaveMongoMQ(DBName string, collection string, ID string, data map[
 	delete(data, "_id")
 	_, err := selectSession().DB(DBName).C(collection).Upsert(bson.M{"_id": ID}, data)
 	if err != nil {
-		log.Println("ERROR: ", DBName, collection, err)
+		logger.ERROR("ERROR: ", DBName, collection, err)
 		return err
 	}
 	return nil
@@ -25,7 +25,7 @@ func (c *Mgo) UpdateMongoMQ(DBName string, collection, key string, data []byte) 
 	value := make(map[string]interface{})
 	err := json.Unmarshal(data, &value)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 
@@ -36,7 +36,7 @@ func (c *Mgo) UpdateMongoMQ(DBName string, collection, key string, data []byte) 
 
 	err = selectSession().DB(DBName).C(collection).UpdateId(filter, update)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	return nil
@@ -47,16 +47,16 @@ func (c *Mgo) DeleteInMongoMQ(DBName string, collection, deleteByID string) erro
 	// Move Record to Recycle Bin
 	persistData := c.FindByIDMQ(DBName, collection, deleteByID)
 	if persistData == nil {
-		log.Println("Get Data for Move to Recycle Bin FAILED")
+		logger.ERROR("Get Data for Move to Recycle Bin FAILED")
 		return nil
 	}
 	delete(persistData, "_id")
 	if _, err := selectSession().DB(MgoDBNameRecycleBin).C(collection).Upsert(bson.M{"_id": deleteByID}, persistData); err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	if err := selectSession().DB(DBName).C(collection).Remove(bson.M{"_id": deleteByID}); err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	return nil
@@ -65,7 +65,7 @@ func (c *Mgo) DeleteInMongoMQ(DBName string, collection, deleteByID string) erro
 // ForceDeleteGeneral - ForceDeleteGeneral
 func (c *Mgo) ForceDeleteGeneral(DBName string, collection, deleteByID string) error {
 	if err := selectSession().DB(DBName).C(collection).Remove(bson.M{"_id": deleteByID}); err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	return nil
@@ -75,7 +75,7 @@ func (c *Mgo) ForceDeleteGeneral(DBName string, collection, deleteByID string) e
 func (c *Mgo) DropCollectionInMongoMQ(DBName string, collection string) error {
 	err := selectSession().DB(DBName).C(collection).DropCollection()
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	return nil
@@ -87,7 +87,7 @@ func (c *Mgo) DropManyCollectionInMongoMQ(DBName string, listCollection []string
 		collection = strings.ReplaceAll(collection, "$", "@")
 		err := selectSession().DB(DBName).C(collection).DropCollection()
 		if err != nil {
-			log.Println("Error while drop collection ", collection)
+			logger.ERROR("Error while drop collection ", collection)
 			return err
 		}
 	}
@@ -99,7 +99,7 @@ func (c *Mgo) FindAllInMongoMQ(DBName string, collection string) []interface{} {
 	var result []interface{}
 	err := selectSession().DB(DBName).C(collection).Find(bson.M{}).All(&result)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil
 	}
 	return result
@@ -110,7 +110,7 @@ func (c *Mgo) FindAllRegexByIDMQ(DBName string, collection, id string) []map[str
 	var result []map[string]interface{}
 	err := selectSession().DB(DBName).C(collection).Find(bson.M{"_id": bson.M{"$regex": id}}).Sort("timestamp").All(&result)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil
 	}
 	return result
@@ -120,7 +120,7 @@ func (c *Mgo) FindAllRegexByIDMQ(DBName string, collection, id string) []map[str
 func (c *Mgo) GetCollectionNamesMQ(DBName string) ([]string, error) {
 	collectionNames, err := selectSession().DB(DBName).CollectionNames()
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, err
 	}
 	return collectionNames, nil
@@ -132,7 +132,7 @@ func (c *Mgo) FindByIDMQ(DBName string, collection string, id string) map[string
 	err := selectSession().DB(DBName).C(collection).Find(bson.M{"_id": id}).One(&result)
 
 	if err == mgo.ErrNotFound || err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil
 	}
 	return result

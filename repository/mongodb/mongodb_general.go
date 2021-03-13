@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"log"
 	"strings"
 
+	logger "github.com/mixi-gaminh/core-framework/logs"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -17,7 +17,7 @@ func (c *Mgo) CreateCollectionJSONSchema(DBName string, collection string, jsonS
 	info.Validator = bson.M{"$jsonSchema": jsonSchema}
 	err := selectSession().DB(DBName).C(collection).Create(info)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	return nil
@@ -27,7 +27,7 @@ func (c *Mgo) CreateCollectionJSONSchema(DBName string, collection string, jsonS
 func (c *Mgo) CountDocuments(DBName string, collection string) (int, error) {
 	n, err := selectSession().DB(DBName).C(collection).Count()
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return -1, err
 	}
 	return n, nil
@@ -37,7 +37,7 @@ func (c *Mgo) CountDocuments(DBName string, collection string) (int, error) {
 func (c *Mgo) GetCollectionNames(DBName string) ([]string, error) {
 	n, err := selectSession().DB(DBName).CollectionNames()
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, err
 	}
 	return n, nil
@@ -49,7 +49,7 @@ func (c *Mgo) FindByID(DBName string, collection string, id string) map[string]i
 	err := selectSession().DB(DBName).C(collection).Find(bson.M{"_id": id}).One(&result)
 
 	if err == mgo.ErrNotFound || err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil
 	}
 	return result
@@ -60,7 +60,7 @@ func (c *Mgo) FindAll(DBName string, collection string) []map[string]interface{}
 	var result []map[string]interface{}
 	err := selectSession().DB(DBName).C(collection).Find(bson.M{}).All(&result)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil
 	}
 	return result
@@ -71,7 +71,7 @@ func (c *Mgo) FindAllID(DBName string, collection string) []map[string]interface
 	var result []map[string]interface{}
 	err := selectSession().DB(DBName).C(collection).Find(bson.M{}).Select(bson.M{"_id": "1"}).All(&result)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil
 	}
 	return result
@@ -93,7 +93,7 @@ func (c *Mgo) FindOneMongoByField(DBName string, collection, f, v string) (map[s
 func (c *Mgo) SaveMongo(DBName string, collection string, ID string, data interface{}) error {
 	_, err := selectSession().DB(DBName).C(collection).Upsert(bson.M{"_id": ID}, data)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	return nil
@@ -106,7 +106,7 @@ func (c *Mgo) UpdateManyByField(DBName string, collection string, fieldNameFilte
 
 	_, err := selectSession().DB(DBName).C(collection).UpdateAll(filter, update)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	return nil
@@ -117,7 +117,7 @@ func (c *Mgo) UpdateMongo(DBName string, collection string, data []byte, bucket,
 	value := make(map[string]interface{})
 	err := json.Unmarshal(data, &value)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 	}
 
 	filter := bson.M{"id": bson.M{"$eq": key}}
@@ -125,7 +125,7 @@ func (c *Mgo) UpdateMongo(DBName string, collection string, data []byte, bucket,
 
 	err = selectSession().DB(DBName).C(bucket).UpdateId(filter, update)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 	}
 }
 
@@ -138,12 +138,12 @@ func (c *Mgo) DeleteInMongo(DBName string, collection string, deleteByID string)
 	}
 	_, err = selectSession().DB(DBName).C("recyclebin_vnpt_business_platform").Upsert(bson.M{"_id": deleteByID}, data)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	err = selectSession().DB(DBName).C(collection).Remove(bson.M{"_id": deleteByID})
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	return nil
@@ -153,7 +153,7 @@ func (c *Mgo) DeleteInMongo(DBName string, collection string, deleteByID string)
 func (c *Mgo) DeleteManyInMongo(DBName string, collection string, listDocument ...string) error {
 	_, err := selectSession().DB(DBName).C(collection).RemoveAll(bson.M{"_id": bson.M{"$in": listDocument}})
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	return nil
@@ -163,7 +163,7 @@ func (c *Mgo) DeleteManyInMongo(DBName string, collection string, listDocument .
 func (c *Mgo) DropCollectionInMongo(DBName string, collection string) {
 	err := selectSession().DB(DBName).C(collection).DropCollection()
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 	}
 }
 
@@ -173,7 +173,7 @@ func (c *Mgo) DropManyCollectionInMongo(DBName string, listCollection []string) 
 		collection = strings.ReplaceAll(collection, "$", "@")
 		err := selectSession().DB(DBName).C(collection).DropCollection()
 		if err != nil {
-			log.Println("Error while drop collection ", collection)
+			logger.ERROR("Error while drop collection ", collection)
 		}
 	}
 }
@@ -182,7 +182,7 @@ func (c *Mgo) DropManyCollectionInMongo(DBName string, listCollection []string) 
 func (c *Mgo) DropDatabase(DBNameDrop string) {
 	err := selectSession().DB(DBNameDrop).DropDatabase()
 	if err != nil {
-		log.Println("Error while drop database ", DBNameDrop)
+		logger.ERROR("Error while drop database ", DBNameDrop)
 	}
 }
 
@@ -192,7 +192,7 @@ func (c *Mgo) FindAllInMongo(DBName string, collection string) []string {
 	var retData []string
 	err := selectSession().DB(DBName).C(collection).Find(bson.M{}).All(&result)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 	}
 	for _, r := range result {
 		rTmp := fmt.Sprintf("%s", r["_id"])
@@ -206,7 +206,7 @@ func (c *Mgo) FindAllRegexByID(DBName string, collection, id string) []map[strin
 	var result []map[string]interface{}
 	err := selectSession().DB(DBName).C(collection).Find(bson.M{"_id": bson.M{"$regex": id}}).Sort("timestamp").All(&result)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil
 	}
 	return result
@@ -218,7 +218,7 @@ func (c *Mgo) UpdateMany(DBName string, collection, fieldUpdate string, valueUpd
 	update := bson.M{"$set": bson.M{fieldUpdate: valueUpdate}}
 	_, err := selectSession().DB(DBName).C(collection).UpdateAll(selector, update)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	return nil

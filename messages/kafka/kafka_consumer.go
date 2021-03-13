@@ -38,7 +38,7 @@ func (k *Kafka) InitConsumer() (*kafka.Consumer, error) {
 
 // CloseConsumer - CloseConsumer
 func (k *Kafka) CloseConsumer(c *kafka.Consumer) {
-	//log.Println("Closed Consumer")
+	//logger.INFO("Closed Consumer")
 	c.Close()
 }
 

@@ -1,8 +1,7 @@
 package main
 
 import (
-	"log"
-
+	logger "github.com/mixi-gaminh/core-framework/logs"
 	kafkaMQ "github.com/mixi-gaminh/core-framework/messages/kafka"
 	natsMQ "github.com/mixi-gaminh/core-framework/messages/nats"
 	"github.com/mixi-gaminh/core-framework/queue"
@@ -69,7 +68,7 @@ func main() {
 		viper.GetString(`nats.request_stream_subject`),
 		viper.GetString(`nats.response_stream_subject`), test)
 	// initialize nats stream constructor
-	natsSingle.NATSConstructor(
+	natsStream.NATSConstructor(
 		"test",
 		"STREAM",
 		viper.GetString(`nats.active`),
@@ -80,7 +79,10 @@ func main() {
 		viper.GetString(`nats.queue_name_stream`),
 		viper.GetString(`nats.request_stream_subject`),
 		viper.GetString(`nats.response_stream_subject`), test)
-	log.Println("Test Lib OK")
+
+	logger.Constructor()
+	logger.INFO("Test Lib OK")
+	defer logger.Close()
 }
 
 func test(msg *nats.Msg) {}

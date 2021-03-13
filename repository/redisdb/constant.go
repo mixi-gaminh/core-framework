@@ -4,6 +4,7 @@ import (
 	"time"
 
 	redis "github.com/go-redis/redis/v8"
+	logger "github.com/mixi-gaminh/core-framework/logs"
 	rejonson "github.com/mixi-gaminh/core-framework/repository/redisdb/lib_rejonson"
 )
 
@@ -80,6 +81,9 @@ func (c *Cache) RedisConstructor(_url string, _maxClients, _minIdle int) {
 	})
 	redisJSONRead0 = rejonson.ExtendClient(redisClientRead0)
 	redisJSONWrite0 = rejonson.ExtendClient(redisClientWrite0)
+	logger.Constructor()
+	logger.NewLogger()
+	logger.INFO("RedisDB Constructor Successfull")
 }
 
 // Close - Close

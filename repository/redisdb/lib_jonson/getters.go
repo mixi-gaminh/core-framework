@@ -5,8 +5,9 @@
 package jonson
 
 import (
-	"log"
 	"reflect"
+
+	logger "github.com/mixi-gaminh/core-framework/logs"
 )
 
 /*
@@ -437,7 +438,7 @@ func (jsn *JSON) atLocked(key interface{}, keys ...interface{}) *JSON {
 	var res *JSON
 
 	if key == nil {
-		log.Println("Key can not be nil")
+		logger.INFO("Key can not be nil")
 		res = NewEmptyJSON()
 		return res
 	}

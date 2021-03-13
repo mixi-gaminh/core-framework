@@ -3,9 +3,10 @@ package redis
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"strings"
 	"sync"
+
+	logger "github.com/mixi-gaminh/core-framework/logs"
 
 	jonson "github.com/mixi-gaminh/core-framework/repository/redisdb/lib_jonson"
 )
@@ -19,7 +20,7 @@ var wg sync.WaitGroup
 func (c *Cache) ReJSONUpdate(ctx context.Context, key, path, value string) (string, error) {
 	str, err := redisJSONWrite0.JsonSet(ctx, key, path, value).Result()
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return str, err
 	}
 	return str, err
@@ -29,7 +30,7 @@ func (c *Cache) ReJSONUpdate(ctx context.Context, key, path, value string) (stri
 func (c *Cache) ReJSONSet(ctx context.Context, key, path, value string, args interface{}) (string, error) {
 	str, err := redisJSONWrite0.JsonSet(ctx, key, path, value, args).Result()
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return str, err
 	}
 	return str, err
@@ -46,7 +47,7 @@ func (c *Cache) ReJSONGetString(ctx context.Context, key string, query string) (
 	args = append(args, query)
 	jsonString, err := redisJSONRead0.JsonGet(ctx, key, args...).Result()
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return "", err
 	}
 
@@ -64,7 +65,7 @@ func (c *Cache) ReJSONGet(ctx context.Context, key string, query string) (interf
 	jsonString, err := redisJSONRead0.JsonGet(ctx, key, args...).Result()
 	if err != nil {
 		if !strings.Contains(err.Error(), "redis: nil") {
-			log.Println(err)
+			logger.ERROR(err)
 		}
 		return nil, err
 	}
@@ -72,7 +73,7 @@ func (c *Cache) ReJSONGet(ctx context.Context, key string, query string) (interf
 	var m interface{}
 	err = json.Unmarshal([]byte(jsonString), &m)
 	if err != nil {
-		log.Println(err.Error())
+		logger.ERROR(err.Error())
 		return nil, err
 	}
 	return m, nil
@@ -88,7 +89,7 @@ func hashGetAllRoutine(waitgroup *sync.WaitGroup, jstring interface{}, key strin
 	var m interface{}
 	err := json.Unmarshal([]byte(jstring.(string)), &m)
 	if err != nil {
-		log.Println(err.Error())
+		logger.ERROR(err.Error())
 		return
 	}
 
@@ -158,7 +159,7 @@ func (c *Cache) HashGetAll(ctx context.Context, redisKey, query string, keys []s
 
 	jsonString, err := redisClientRead0.HMGet(ctx, redisKey, keys...).Result()
 	if err != nil {
-		log.Println(err.Error())
+		logger.ERROR(err.Error())
 		return nil, err
 	}
 	retArr := make([]interface{}, len(jsonString))
@@ -193,7 +194,7 @@ func (c *Cache) ReJSONGetAll(ctx context.Context, bucket, query string, keys []s
 			defer waitgroup.Done()
 			jstring, err := redisJSONRead0.JsonGet(ctx, k, args...).Result()
 			if err != nil && !strings.Contains(err.Error(), "redis: nil") {
-				log.Println(err.Error())
+				logger.ERROR(err.Error())
 				return
 			}
 			if jstring == "" {
@@ -202,7 +203,7 @@ func (c *Cache) ReJSONGetAll(ctx context.Context, bucket, query string, keys []s
 			var m interface{}
 			j, err := jonson.Parse([]byte(jstring))
 			if err != nil {
-				log.Println(err.Error())
+				logger.ERROR(err.Error())
 			}
 			m = j.ToInterface()
 
@@ -295,7 +296,7 @@ func (c *Cache) ReJSONGetAnyAll(ctx context.Context, keys []string, query string
 	args = append(args, query)
 	jsonString, err := redisJSONRead0.JsonMGet(ctx, firstKey, args...).Result()
 	if err != nil {
-		log.Println(err.Error())
+		logger.ERROR(err.Error())
 		//return nil, err
 	}
 	for _, jstring := range jsonString {
@@ -305,7 +306,7 @@ func (c *Cache) ReJSONGetAnyAll(ctx context.Context, keys []string, query string
 		var m interface{}
 		err = json.Unmarshal([]byte(jstring), &m)
 		if err != nil {
-			log.Println(err.Error())
+			logger.ERROR(err.Error())
 		}
 		strArr = append(strArr, m)
 	}
@@ -344,18 +345,18 @@ func (c *Cache) RealtimeNotification(ctx context.Context, channel string, msg in
 func Decode(jsonString string) (interface{}, error) {
 	rejson, err := jonson.Parse([]byte(jsonString))
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, err
 	}
 	ret, err := rejson.ToJSONString()
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, err
 	}
 	var m interface{}
 	err = json.Unmarshal([]byte(ret), &m)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, err
 	}
 	return m, nil
@@ -373,7 +374,7 @@ func (c *Cache) ReJSONGetByQuery(ctx context.Context, key, query string) []inter
 			if err == nil {
 				m, err := Decode(ret)
 				if err != nil {
-					log.Println(err)
+					logger.ERROR(err)
 				}
 				result = append(result, m)
 				i++
@@ -382,7 +383,7 @@ func (c *Cache) ReJSONGetByQuery(ctx context.Context, key, query string) []inter
 		}(k)
 	}
 	wg.Wait()
-	log.Println(i)
+	logger.INFO(i)
 
 	return result
 }

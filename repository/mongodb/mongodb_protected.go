@@ -1,8 +1,7 @@
 package mongo
 
 import (
-	"log"
-
+	logger "github.com/mixi-gaminh/core-framework/logs"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -11,7 +10,7 @@ import (
 func (c *Mgo) SaveMongoProtected(DBName string, collection string, ID string, data map[string]interface{}) error {
 	_, err := selectSession().DB(MgoDBNameProtected).C(collection).Upsert(bson.M{"_id": ID}, data)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	return nil
@@ -23,7 +22,7 @@ func (c *Mgo) FindProtectedByID(DBName string, collection string, id string) map
 	err := selectSession().DB(MgoDBNameProtected).C(collection).Find(bson.M{"_id": id}).One(&result)
 
 	if err != mgo.ErrNotFound && err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil
 	}
 	return result
@@ -34,7 +33,7 @@ func (c *Mgo) FindProtectedAll(DBName string, collection string) []map[string]in
 	var result []map[string]interface{}
 	err := selectSession().DB(MgoDBNameProtected).C(collection).Find(bson.M{}).All(&result)
 	if err != mgo.ErrNotFound && err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil
 	}
 	return result

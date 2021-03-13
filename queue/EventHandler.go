@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/centrifugal/centrifuge-go"
+	logger "github.com/mixi-gaminh/core-framework/logs"
 )
 
 var dbName string
@@ -13,6 +14,9 @@ var dbName string
 func (q *Queue) QueueConstructor(_centrifugoURL, _dbName string) {
 	q.CentrifugoWSURL = _centrifugoURL
 	dbName = _dbName
+	logger.Constructor()
+	logger.NewLogger()
+	logger.INFO("Queue Constructor Successfull")
 }
 
 // OnConnect - OnConnect
@@ -23,10 +27,10 @@ func (q *Queue) OnConnect(c *centrifuge.Client, e centrifuge.ConnectEvent) {
 // OnDisconnect - OnDisconnect
 func (q *Queue) OnDisconnect(c *centrifuge.Client, e centrifuge.DisconnectEvent) {
 	log.Printf("Disconnected: %s\n", e.Reason)
-	log.Println("Retry Connect...")
+	logger.INFO("Retry Connect...")
 	err := ctfugo.Connect()
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return
 	}
 }
@@ -40,7 +44,7 @@ func (q *Queue) CreateConnectionToCentrifugo() (*centrifuge.Client, error) {
 
 	err := ctfugo.Connect()
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return nil, err
 	}
 	return ctfugo, nil
@@ -50,10 +54,10 @@ func (q *Queue) CreateConnectionToCentrifugo() (*centrifuge.Client, error) {
 func publishMessageToCentrifugo(channel string, dataBytes []byte) error {
 	ret, err := ctfugo.Publish(channel, dataBytes)
 	if err != nil {
-		log.Println("DEBUG ERROR publishMessageToCentrifugo:", err)
+		logger.ERROR("DEBUG ERROR publishMessageToCentrifugo:", err)
 		return err
 	}
-	log.Println("DEBUG INFO publishMessageToCentrifugo:", ret)
+	logger.INFO("DEBUG INFO publishMessageToCentrifugo:", ret)
 	return nil
 }
 
@@ -79,14 +83,14 @@ func publishDoneActionEvent(userID, appID, bucketID, recordID, action string) {
 	}
 	bodyMsg, err := json.Marshal(bodyMap)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return
 	}
 
 	// Publish message to Centrifugo
-	log.Println("Publish Message To Centrifugo:\nChannel: ", channel, "\nMessage: ", bodyMap)
+	logger.INFO("Publish Message To Centrifugo:\nChannel: ", channel, "\nMessage: ", bodyMap)
 	if err := publishMessageToCentrifugo(channel, bodyMsg); err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return
 	}
 }

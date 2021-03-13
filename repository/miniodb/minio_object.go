@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/minio/minio-go/v7"
+	logger "github.com/mixi-gaminh/core-framework/logs"
 )
 
 // PutObject - PutObject
@@ -24,7 +25,7 @@ func (c *FileStorage) PutObject(ctx context.Context, bucketID, contentType, path
 	go func(src io.Reader, bucketID, path string, size int64, opts minio.PutObjectOptions) {
 		n, err := minioClient.PutObject(ctx, bucketID, path, src, size, opts)
 		if err != nil {
-			log.Println("Failed Upload the file with PutObject - err:", err)
+			logger.ERROR("Failed Upload the file with PutObject - err:", err)
 		} else {
 			log.Printf("Successfully uploaded %s of size %d\n", path, n.Size)
 		}
@@ -41,7 +42,7 @@ func (c *FileStorage) PutObject(ctx context.Context, bucketID, contentType, path
 // RemoveObject - RemoveObject
 func (c *FileStorage) RemoveObject(ctx context.Context, bucketID, objectName string) error {
 	if err := minioClient.RemoveObject(ctx, bucketID, objectName, minio.RemoveObjectOptions{}); err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	return nil
@@ -54,7 +55,7 @@ func (c *FileStorage) RemoveAllObjects(ctx context.Context, bucketID string) ([]
 	objectCh := minioClient.ListObjects(ctx, bucketID, minio.ListObjectsOptions{Recursive: true})
 	for object := range objectCh {
 		if object.Err != nil {
-			log.Println(object.Err)
+			logger.ERROR(object.Err)
 			return nil, object.Err
 		}
 		if err := c.RemoveObject(ctx, bucketID, object.Key); err != nil {
@@ -83,7 +84,7 @@ func (c *FileStorage) CopyObject(ctx context.Context, bucketSrc, objectSrc, buck
 	// Initiate copy object.
 	ui, err := minioClient.CopyObject(ctx, dst, src)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 

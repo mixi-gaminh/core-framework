@@ -2,16 +2,16 @@ package minio
 
 import (
 	"context"
-	"log"
 
 	"github.com/minio/minio-go/v7"
+	logger "github.com/mixi-gaminh/core-framework/logs"
 )
 
 // BucketIsExist - BucketIsExist
 func (c *FileStorage) BucketIsExist(ctx context.Context, bucketID string) bool {
 	exists, err := minioClient.BucketExists(ctx, bucketID)
 	if err != nil || !exists {
-		log.Println(err)
+		logger.ERROR(err)
 		return false
 	}
 	return true
@@ -21,7 +21,7 @@ func (c *FileStorage) BucketIsExist(ctx context.Context, bucketID string) bool {
 func (c *FileStorage) MakeBucket(ctx context.Context, bucketID string) error {
 	// Make a new bucket if bucket is not exist.
 	if err := minioClient.MakeBucket(ctx, bucketID, minio.MakeBucketOptions{Region: minioLocation}); err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	return nil
@@ -43,7 +43,7 @@ func (c *FileStorage) RemoveBucket(ctx context.Context, userID, deviceID, bucket
 func (c *FileStorage) GetBucketPolicy(ctx context.Context, bucketID string) (string, error) {
 	policy, err := minioClient.GetBucketPolicy(ctx, bucketID)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return "", err
 	}
 	return policy, nil
@@ -53,7 +53,7 @@ func (c *FileStorage) GetBucketPolicy(ctx context.Context, bucketID string) (str
 func (c *FileStorage) SetBucketPolicy(ctx context.Context, bucketID, policy string) error {
 	err := minioClient.SetBucketPolicy(ctx, bucketID, policy)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR(err)
 		return err
 	}
 	return nil
