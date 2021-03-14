@@ -1,9 +1,9 @@
 package queue
 
 import (
+	logger "github.com/mixi-gaminh/core-framework/logs"
 	mongodb "github.com/mixi-gaminh/core-framework/repository/mongodb"
 	redisdb "github.com/mixi-gaminh/core-framework/repository/redisdb"
-	logger "github.com/mixi-gaminh/core-framework/logs"
 
 	"github.com/centrifugal/centrifuge-go"
 )
@@ -19,6 +19,17 @@ type Queue struct {
 var mgodb mongodb.Mgo
 var db redisdb.Cache
 var ctfugo *centrifuge.Client
+
+var dbName string
+
+// QueueConstructor -  QueueConstructor
+func (q *Queue) QueueConstructor(_centrifugoURL, _dbName string) {
+	q.CentrifugoWSURL = _centrifugoURL
+	dbName = _dbName
+	logger.Constructor(logger.IsDevelopment)
+	logger.NewLogger()
+	logger.INFO("Queue Constructor Successfull")
+}
 
 // TryLenArray - TryLenArray
 func TryLenArray(data []string, length int) bool {

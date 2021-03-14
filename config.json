@@ -1,6 +1,8 @@
 {
   "context": {
-    "timeout": 2
+    "timeout": 2,
+    "development": false,
+    "name":"core-framework"
   },
   "redis": {
     "url": "203.162.141.11:2222",

@@ -8,16 +8,7 @@ import (
 	logger "github.com/mixi-gaminh/core-framework/logs"
 )
 
-var dbName string
 
-// QueueConstructor -  QueueConstructor
-func (q *Queue) QueueConstructor(_centrifugoURL, _dbName string) {
-	q.CentrifugoWSURL = _centrifugoURL
-	dbName = _dbName
-	logger.Constructor()
-	logger.NewLogger()
-	logger.INFO("Queue Constructor Successfull")
-}
 
 // OnConnect - OnConnect
 func (q *Queue) OnConnect(c *centrifuge.Client, e centrifuge.ConnectEvent) {

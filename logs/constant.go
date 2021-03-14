@@ -10,6 +10,9 @@ const ERROR_LOG_FILE = "error.log"
 const INFO_LOG_FILE = "info.log"
 const WARNING_LOG_FILE = "warning.log"
 
+// IsDevelopment - IsDevelopment
+var IsDevelopment bool = true
+
 var (
 	WarningLogger *log.Logger
 	InfoLogger    *log.Logger
@@ -18,7 +21,8 @@ var (
 var err error
 var errorLog, infoLog, warningLog *os.File
 
-func Constructor() {
+func Constructor(_isDevelopment bool) {
+	IsDevelopment = _isDevelopment
 	infoLog, err = os.OpenFile(INFO_LOG_FILE, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
 	if err != nil {
 		log.Fatal(err)
@@ -34,18 +38,17 @@ func Constructor() {
 }
 
 func NewLogger() {
-	// if infoLog == nil || warningLog == nil || errorLog == nil {
-	// 	log.Fatal("ERROR OPEN LOG FILE")
-	// }
 	InfoLogger = log.New(infoLog, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
 	WarningLogger = log.New(warningLog, "WARNING: ", log.Ldate|log.Ltime|log.Lshortfile)
 	ErrorLogger = log.New(errorLog, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
-
-	InfoLogger.SetOutput(io.MultiWriter(os.Stdout, infoLog))
-	WarningLogger.SetOutput(io.MultiWriter(os.Stdout, warningLog))
-	ErrorLogger.SetOutput(io.MultiWriter(os.Stdout, errorLog))
-
-	//log.SetFlags(log.LstdFlags | log.Lshortfile)
+	if IsDevelopment {
+		InfoLogger.SetOutput(io.MultiWriter(os.Stdout, infoLog))
+		WarningLogger.SetOutput(io.MultiWriter(os.Stdout, warningLog))
+		ErrorLogger.SetOutput(io.MultiWriter(os.Stdout, errorLog))
+	}
+	InfoLogger.SetOutput(infoLog)
+	WarningLogger.SetOutput(warningLog)
+	ErrorLogger.SetOutput(errorLog)
 }
 
 func Close() {

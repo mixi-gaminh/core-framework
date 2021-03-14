@@ -47,7 +47,7 @@ func (n *NATS) NATSConstructor(_memberID, _typeReqRepl, _active, _natsURL, _queu
 			}
 		}
 	}
-	logger.Constructor()
+	logger.Constructor(logger.IsDevelopment)
 	logger.NewLogger()
 	logger.INFO("NATS Constructor Successfull")
 }

@@ -81,7 +81,7 @@ func (c *Cache) RedisConstructor(_url string, _maxClients, _minIdle int) {
 	})
 	redisJSONRead0 = rejonson.ExtendClient(redisClientRead0)
 	redisJSONWrite0 = rejonson.ExtendClient(redisClientWrite0)
-	logger.Constructor()
+	logger.Constructor(logger.IsDevelopment)
 	logger.NewLogger()
 	logger.INFO("RedisDB Constructor Successfull")
 }

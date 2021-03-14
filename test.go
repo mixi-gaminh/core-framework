@@ -1,6 +1,8 @@
 package main
 
 import (
+	"time"
+
 	logger "github.com/mixi-gaminh/core-framework/logs"
 	kafkaMQ "github.com/mixi-gaminh/core-framework/messages/kafka"
 	natsMQ "github.com/mixi-gaminh/core-framework/messages/nats"
@@ -25,6 +27,9 @@ func main() {
 		panic(err)
 	}
 	VDDDataBaseName := viper.GetString(`mongoselectSession().DBname`)
+	logger.Constructor(viper.GetBool(`context.development`))
+	logger.ListenLogNats()
+	logger.StreamToNats()
 
 	// initialize kafka constructor
 	k.KafkaConstructor(
@@ -80,8 +85,8 @@ func main() {
 		viper.GetString(`nats.request_stream_subject`),
 		viper.GetString(`nats.response_stream_subject`), test)
 
-	logger.Constructor()
 	logger.INFO("Test Lib OK")
+	time.Sleep(1 * time.Second)
 	defer logger.Close()
 }
 

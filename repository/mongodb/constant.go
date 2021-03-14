@@ -54,7 +54,7 @@ func (c *Mgo) MongoDBConstructor(MongoHost []string, username, password string) 
 		logger.ERROR("MONGO PING ERROR: ", err)
 		os.Exit(-1)
 	}
-	logger.Constructor()
+	logger.Constructor(logger.IsDevelopment)
 	logger.NewLogger()
 	logger.INFO("MongoDB Constructor Successfull")
 }
