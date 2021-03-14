@@ -21,6 +21,7 @@ var (
 var err error
 var errorLog, infoLog, warningLog *os.File
 
+
 func Constructor(_isDevelopment bool) {
 	IsDevelopment = _isDevelopment
 	infoLog, err = os.OpenFile(INFO_LOG_FILE, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0755)
