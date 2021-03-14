@@ -6,6 +6,9 @@ import (
 	"os"
 )
 
+// LogStashClient - LogStashClient
+type LogStashClient struct{}
+
 const ERROR_LOG_FILE = "error.log"
 const INFO_LOG_FILE = "info.log"
 const WARNING_LOG_FILE = "warning.log"
@@ -20,7 +23,6 @@ var (
 )
 var err error
 var errorLog, infoLog, warningLog *os.File
-
 
 func Constructor(_isDevelopment bool) {
 	IsDevelopment = _isDevelopment

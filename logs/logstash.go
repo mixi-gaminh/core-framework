@@ -9,8 +9,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-// LogStashClient - LogStashClient
-type LogStashClient struct{}
 
 var appName, documentType string
 var connection net.Conn
