@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 
 	"github.com/spf13/viper"
 )
-
 
 var appName, documentType string
 var connection net.Conn
@@ -18,14 +18,11 @@ var connectionError error
 func (l *LogStashClient) CreateConnection() {
 	appName = viper.GetString(`log.appName`)
 	documentType = viper.GetString(`log.document_type`)
-	if connectionError != nil {
-		go l.CreateConnection()
-		return
-	}
+
 	connection, err = net.Dial("tcp", viper.GetString(`log.domain`))
-	if err != nil {
-		fmt.Println("connectionError: ", connectionError)
-		return
+	if connectionError != nil {
+		log.Println("connectionError: ", connectionError)
+		os.Exit(-1)
 	}
 }
 
