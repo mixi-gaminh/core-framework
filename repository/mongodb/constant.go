@@ -92,6 +92,6 @@ func isNumDot(s string) bool {
 }
 
 func selectSession() *mgo.Session {
-	sessionNumber := rand.Intn(maxSession-0+1) + 0
+	sessionNumber := rand.Intn(maxSession)
 	return db[sessionNumber]
 }
