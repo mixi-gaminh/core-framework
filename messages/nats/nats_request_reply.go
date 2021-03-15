@@ -32,18 +32,18 @@ func (n *NATS) NATSConstructor(_memberID, _typeReqRepl, _active, _natsURL, _queu
 			// Connect to NATS
 			nc, err = nats.Connect(n.NATSURL, opts...)
 			if err != nil {
-				log.Fatal(err)
+				logger.FATAL(err)
 			}
 			if strings.ToUpper(_typeReqRepl) == "STREAM" {
 				if _, err := nc.QueueSubscribe(n.RequestStreamSubject, n.QueueNameStream, cb); err != nil {
-					log.Fatal(err)
+					logger.FATAL(err)
 				}
 			} else if strings.ToUpper(_typeReqRepl) == "SINGLE" {
 				if _, err := nc.QueueSubscribe(n.RequestSubject, n.QueueName, cb); err != nil {
-					log.Fatal(err)
+					logger.FATAL(err)
 				}
 			} else {
-				log.Fatal("Type Request - Reply is invalid")
+				logger.FATAL("Type Request - Reply is invalid")
 			}
 		}
 	}
