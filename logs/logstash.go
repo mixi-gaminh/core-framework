@@ -19,7 +19,7 @@ func (l *LogStashClient) CreateConnection() {
 	appName = viper.GetString(`log.appName`)
 	documentType = viper.GetString(`log.document_type`)
 
-	connection, err = net.Dial("tcp", viper.GetString(`log.domain`))
+	connection, connectionError = net.Dial("tcp", viper.GetString(`log.domain`))
 	if connectionError != nil {
 		log.Println("connectionError: ", connectionError)
 		os.Exit(-1)

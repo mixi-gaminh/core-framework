@@ -26,7 +26,7 @@ var dbName string
 func (q *Queue) QueueConstructor(_centrifugoURL, _dbName string) {
 	q.CentrifugoWSURL = _centrifugoURL
 	dbName = _dbName
-	logger.Constructor(logger.IsDevelopment)
+	//logger.Constructor(logger.IsDevelopment)
 	logger.NewLogger()
 	logger.INFO("Queue Constructor Successfull")
 }

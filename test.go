@@ -28,7 +28,7 @@ func main() {
 	}
 	VDDDataBaseName := viper.GetString(`mongoselectSession().DBname`)
 	logger.Constructor(viper.GetBool(`context.development`))
-	logger.ListenLogNats()
+	//logger.ListenLogNats()
 	logger.StreamToNats()
 
 	// initialize kafka constructor

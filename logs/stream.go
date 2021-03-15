@@ -28,7 +28,7 @@ func StreamToNats() {
 		}
 
 		// STREAM LOG INFO
-		infoLog, err := tail.TailFile("info.log", tail.Config{Follow: true})
+		infoLog, err := tail.TailFile(INFO_LOG_FILE, tail.Config{Follow: true})
 		if err != nil {
 			panic(err)
 		}
@@ -39,7 +39,7 @@ func StreamToNats() {
 		}
 
 		// STREAM LOG ERROR
-		errorLog, err := tail.TailFile("error.log", tail.Config{Follow: true})
+		errorLog, err := tail.TailFile(ERROR_LOG_FILE, tail.Config{Follow: true})
 		if err != nil {
 			panic(err)
 		}
@@ -50,7 +50,7 @@ func StreamToNats() {
 		}
 
 		// STREAM LOG WARNING
-		warningLog, err := tail.TailFile("warning.log", tail.Config{Follow: true})
+		warningLog, err := tail.TailFile(WARNING_LOG_FILE, tail.Config{Follow: true})
 		if err != nil {
 			panic(err)
 		}

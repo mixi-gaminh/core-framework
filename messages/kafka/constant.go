@@ -30,7 +30,7 @@ func (k *Kafka) KafkaConstructor(_active, _kafkaURL, _afkaGroupID, _kafkaAutoOff
 		k.KafkaSessionTimeoutms = _kafkaSessionTimeoutms
 		k.KafkaMessageMaxBytes = _kafkaMessageMaxBytes
 	}
-	logger.Constructor(logger.IsDevelopment)
+	//logger.Constructor(logger.IsDevelopment)
 	logger.NewLogger()
 	logger.INFO("Kafka Constructor Successfull")
 }
