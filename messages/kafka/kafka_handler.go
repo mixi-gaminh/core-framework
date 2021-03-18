@@ -9,7 +9,7 @@ import (
 func (k *Kafka) KafkaPublishSave(producer *kafka.Producer, collection, record, data string) error {
 	keyMsgKafka := collection + "," + record
 	valueMsgKafka := data
-	if err := k.PublishMessage(producer, producerSaveCmdTopic, 0, keyMsgKafka, valueMsgKafka); err != nil {
+	if err := k.PublishMessage(producer, k.ProducerSaveTopic, 0, keyMsgKafka, valueMsgKafka); err != nil {
 		logger.ERROR(err)
 		return err
 	}
@@ -20,7 +20,7 @@ func (k *Kafka) KafkaPublishSave(producer *kafka.Producer, collection, record, d
 func (k *Kafka) KafkaPublishUpdate(producer *kafka.Producer, collection, record, data string) error {
 	keyMsgKafka := collection + "," + record
 	valueMsgKafka := data
-	if err := k.PublishMessage(producer, producerUpdateCmdTopic, 0, keyMsgKafka, valueMsgKafka); err != nil {
+	if err := k.PublishMessage(producer, k.ProducerUpdateTopic, 0, keyMsgKafka, valueMsgKafka); err != nil {
 		logger.ERROR(err)
 		return err
 	}
@@ -31,7 +31,7 @@ func (k *Kafka) KafkaPublishUpdate(producer *kafka.Producer, collection, record,
 func (k *Kafka) KafkaPublishDelete(producer *kafka.Producer, collection, record string) error {
 	keyMsgKafka := collection
 	valueMsgKafka := record
-	if err := k.PublishMessage(producer, producerDeleteCmdTopic, 0, keyMsgKafka, valueMsgKafka); err != nil {
+	if err := k.PublishMessage(producer, k.ProducerDeleteTopic, 0, keyMsgKafka, valueMsgKafka); err != nil {
 		logger.ERROR(err)
 		return err
 	}
@@ -42,7 +42,7 @@ func (k *Kafka) KafkaPublishDelete(producer *kafka.Producer, collection, record 
 func (k *Kafka) KafkaPublishDrop(producer *kafka.Producer, key, value string) error {
 	keyMsgKafka := key
 	valueMsgKafka := value
-	if err := k.PublishMessage(producer, producerDropCmdTopic, 0, keyMsgKafka, valueMsgKafka); err != nil {
+	if err := k.PublishMessage(producer, k.ProducerDropTopic, 0, keyMsgKafka, valueMsgKafka); err != nil {
 		logger.ERROR(err)
 		return err
 	}
@@ -51,10 +51,10 @@ func (k *Kafka) KafkaPublishDrop(producer *kafka.Producer, key, value string) er
 
 // KafkaPublishES - KafkaPublishES
 func (k *Kafka) KafkaPublishES(producer *kafka.Producer, topic, header, data string) error {
-	consumerTopic := topic
+	ProducerTopic := topic
 	keyMsgKafka := header
 	valueMsgKafka := data
-	if err := k.PublishMessage(producer, consumerTopic, 0, keyMsgKafka, valueMsgKafka); err != nil {
+	if err := k.PublishMessage(producer, ProducerTopic, 0, keyMsgKafka, valueMsgKafka); err != nil {
 		logger.ERROR(err)
 		return err
 	}

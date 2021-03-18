@@ -39,7 +39,12 @@ func main() {
 		viper.GetString(`kafka.autoOffsetReset`),
 		viper.GetString(`kafka.maxPollIntervalms`),
 		viper.GetString(`kafka.sessionTimeoutms`),
-		viper.GetString(`kafka.messageMaxBytes`))
+		viper.GetString(`kafka.messageMaxBytes`),
+		viper.GetString(`kafka.producerSaveTopic`),
+		viper.GetString(`kafka.producerUpdateTopic`),
+		viper.GetString(`kafka.producerDeleteTopic`),
+		viper.GetString(`kafka.producerDropTopic`),
+	)
 	// initialize redis constructor
 	redis.RedisConstructor(
 		viper.GetString(`redis.url`),

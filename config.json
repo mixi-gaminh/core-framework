@@ -19,7 +19,11 @@
     "maxPollIntervalms": "300000",
     "sessionTimeoutms": "10000",
     "messageMaxBytes": "200000000",
-    "pool_max_connection": "20"
+    "pool_max_connection": "20",
+    "producerSaveTopic": "SaveRecord",
+    "producerUpdateTopic": "UpdateRecord",
+    "producerDeleteTopic": "DeleteRecord",
+    "producerDropTopic":"Drop"
   },
   "nats": {
     "active": "true",
