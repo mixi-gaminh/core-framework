@@ -13,11 +13,12 @@ type Kafka struct {
 	KafkaMaxPollIntervalms string
 	KafkaSessionTimeoutms  string
 	KafkaMessageMaxBytes   string
-	ProducerSaveTopic      string
-	ProducerUpdateTopic    string
-	ProducerDeleteTopic    string
-	ProducerDropTopic      string
 }
+
+var ProducerSaveTopic string
+var ProducerUpdateTopic string
+var ProducerDeleteTopic string
+var ProducerDropTopic string
 
 // KafkaConstructor - KafkaConstructor
 func (k *Kafka) KafkaConstructor(_active, _kafkaURL, _afkaGroupID, _kafkaAutoOffsetReset,
@@ -30,10 +31,10 @@ func (k *Kafka) KafkaConstructor(_active, _kafkaURL, _afkaGroupID, _kafkaAutoOff
 		k.KafkaMaxPollIntervalms = _kafkaMaxPollIntervalms
 		k.KafkaSessionTimeoutms = _kafkaSessionTimeoutms
 		k.KafkaMessageMaxBytes = _kafkaMessageMaxBytes
-		k.ProducerSaveTopic = _producerSaveTopic
-		k.ProducerUpdateTopic = _producerUpdateTopic
-		k.ProducerDeleteTopic = _producerDeleteTopic
-		k.ProducerDropTopic = _producerDropTopic
+		ProducerSaveTopic = _producerSaveTopic
+		ProducerUpdateTopic = _producerUpdateTopic
+		ProducerDeleteTopic = _producerDeleteTopic
+		ProducerDropTopic = _producerDropTopic
 	}
 	//logger.Constructor(logger.IsDevelopment)
 	logger.NewLogger()
