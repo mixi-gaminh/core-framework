@@ -1,3 +1,5 @@
+package model
+
 type (
 	NearBy struct {
 		LocationName string     `json:"location_name" validate:"required"`
