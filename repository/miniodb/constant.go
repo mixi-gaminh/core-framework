@@ -9,7 +9,7 @@ import (
 // MinioDB - exported as symbol named "MinioDB"
 // var MinioDB FileStorage
 
-var minioClient *minio.Client
+var MinioClient *minio.Client
 
 var minioAccessKeyID string
 var minioSecretAccessKey string
@@ -43,7 +43,7 @@ func (c *FileStorage) FileStorageConstructor(_minIOHost, _minioEndpoint, _minioA
 	if err != nil {
 		panic(err)
 	}
-	minioClient = _minioClient
+	MinioClient = _minioClient
 	logger.NewLogger()
 }
 

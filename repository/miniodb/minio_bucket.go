@@ -9,7 +9,7 @@ import (
 
 // BucketIsExist - BucketIsExist
 func (c *FileStorage) BucketIsExist(ctx context.Context, bucketID string) bool {
-	exists, err := minioClient.BucketExists(ctx, bucketID)
+	exists, err := MinioClient.BucketExists(ctx, bucketID)
 	if err != nil || !exists {
 		logger.ERROR(err)
 		return false
@@ -20,7 +20,7 @@ func (c *FileStorage) BucketIsExist(ctx context.Context, bucketID string) bool {
 // MakeBucket - MakeBucket
 func (c *FileStorage) MakeBucket(ctx context.Context, bucketID string) error {
 	// Make a new bucket if bucket is not exist.
-	if err := minioClient.MakeBucket(ctx, bucketID, minio.MakeBucketOptions{Region: minioLocation}); err != nil {
+	if err := MinioClient.MakeBucket(ctx, bucketID, minio.MakeBucketOptions{Region: minioLocation}); err != nil {
 		logger.ERROR(err)
 		return err
 	}
@@ -33,7 +33,7 @@ func (c *FileStorage) RemoveBucket(ctx context.Context, userID, deviceID, bucket
 	if err != nil {
 		return nil, err
 	}
-	if err := minioClient.RemoveBucket(ctx, bucketID); err != nil {
+	if err := MinioClient.RemoveBucket(ctx, bucketID); err != nil {
 		return nil, err
 	}
 	return listObjectsRemove, nil
@@ -41,7 +41,7 @@ func (c *FileStorage) RemoveBucket(ctx context.Context, userID, deviceID, bucket
 
 // GetBucketPolicy - GetBucketPolicy
 func (c *FileStorage) GetBucketPolicy(ctx context.Context, bucketID string) (string, error) {
-	policy, err := minioClient.GetBucketPolicy(ctx, bucketID)
+	policy, err := MinioClient.GetBucketPolicy(ctx, bucketID)
 	if err != nil {
 		logger.ERROR(err)
 		return "", err
@@ -51,7 +51,7 @@ func (c *FileStorage) GetBucketPolicy(ctx context.Context, bucketID string) (str
 
 // SetBucketPolicy - SetBucketPolicy
 func (c *FileStorage) SetBucketPolicy(ctx context.Context, bucketID, policy string) error {
-	err := minioClient.SetBucketPolicy(ctx, bucketID, policy)
+	err := MinioClient.SetBucketPolicy(ctx, bucketID, policy)
 	if err != nil {
 		logger.ERROR(err)
 		return err
