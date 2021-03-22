@@ -30,7 +30,7 @@ func main() {
 	logger.Constructor(viper.GetBool(`context.development`))
 	//logger.ListenLogNats()
 	logger.StreamToNats()
-	//test
+
 	// // initialize kafka constructor
 	// k.KafkaConstructor(
 	// 	viper.GetString(`kafka.active`),
