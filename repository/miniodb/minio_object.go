@@ -23,7 +23,7 @@ func (c *FileStorage) PutObject(ctx context.Context, bucketID, contentType, path
 	// ioReader := bytes.NewReader(fileStorage.Source)
 	// Upload the file with PutObject
 	go func(src io.Reader, bucketID, path string, size int64, opts minio.PutObjectOptions) {
-		n, err := minioClient.PutObject(ctx, bucketID, path, src, size, opts)
+		n, err := MinioClient.PutObject(ctx, bucketID, path, src, size, opts)
 		if err != nil {
 			logger.ERROR("Failed Upload the file with PutObject - err:", err)
 		} else {
@@ -39,9 +39,23 @@ func (c *FileStorage) PutObject(ctx context.Context, bucketID, contentType, path
 	return infoMediaUpload, nil
 }
 
+func (c *FileStorage) ListObjects(ctx context.Context, bucketID, prefix string) ([]string, error) {
+	var listObjects []string
+	// List all Object in Bucket
+	objectCh := MinioClient.ListObjects(ctx, bucketID, minio.ListObjectsOptions{Prefix: prefix, Recursive: true})
+	for object := range objectCh {
+		if object.Err != nil {
+			logger.ERROR(object.Err)
+			return nil, object.Err
+		}
+		listObjects = append(listObjects, object.Key)
+	}
+	return listObjects, nil
+}
+
 // RemoveObject - RemoveObject
 func (c *FileStorage) RemoveObject(ctx context.Context, bucketID, objectName string) error {
-	if err := minioClient.RemoveObject(ctx, bucketID, objectName, minio.RemoveObjectOptions{}); err != nil {
+	if err := MinioClient.RemoveObject(ctx, bucketID, objectName, minio.RemoveObjectOptions{}); err != nil {
 		logger.ERROR(err)
 		return err
 	}
@@ -52,7 +66,7 @@ func (c *FileStorage) RemoveObject(ctx context.Context, bucketID, objectName str
 func (c *FileStorage) RemoveAllObjects(ctx context.Context, bucketID string) ([]string, error) {
 	var listObjectsRemove []string
 	// Remove all Object in Bucket
-	objectCh := minioClient.ListObjects(ctx, bucketID, minio.ListObjectsOptions{Recursive: true})
+	objectCh := MinioClient.ListObjects(ctx, bucketID, minio.ListObjectsOptions{Recursive: true})
 	for object := range objectCh {
 		if object.Err != nil {
 			logger.ERROR(object.Err)
@@ -82,7 +96,7 @@ func (c *FileStorage) CopyObject(ctx context.Context, bucketSrc, objectSrc, buck
 	}
 
 	// Initiate copy object.
-	ui, err := minioClient.CopyObject(ctx, dst, src)
+	ui, err := MinioClient.CopyObject(ctx, dst, src)
 	if err != nil {
 		logger.ERROR(err)
 		return err
@@ -94,7 +108,7 @@ func (c *FileStorage) CopyObject(ctx context.Context, bucketSrc, objectSrc, buck
 
 // StatObject - StatObject
 func (c *FileStorage) StatObject(ctx context.Context, bucketID, objectName string) (interface{}, error) {
-	stat, err := minioClient.StatObject(ctx, bucketID, objectName, minio.StatObjectOptions{})
+	stat, err := MinioClient.StatObject(ctx, bucketID, objectName, minio.StatObjectOptions{})
 	if err != nil {
 		log.Fatalln(err)
 		return nil, err
