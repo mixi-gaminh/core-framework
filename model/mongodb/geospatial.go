@@ -4,8 +4,7 @@ type (
 	NearBy struct {
 		LocationName string     `json:"location_name" validate:"required"`
 		Type         string     `json:"type" validate:"required"`
-		CoorName     string     `json:"coor_name" validate:"required"`
-		Coor         Coordinate `json:"coordinate" validate:"required"`
+		Coordinate   Coordinate `json:"coordinate" validate:"required"`
 		MaxDistance  float64    `json:"max_distance" validate:"required"`
 		MinDistance  float64    `json:"min_distance" validate:"required"`
 	}
