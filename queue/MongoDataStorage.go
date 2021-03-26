@@ -34,6 +34,7 @@ func (q *Queue) Save(ctx context.Context, msg []string) {
 	}
 	kArr := strings.Split(collection, "@")
 	if len(kArr) < 4 {
+		mgodb.SaveMongoMQ(dbName, collection, record, persistData)
 		return
 	}
 	keyRecordInHash := kArr[1] + "$" + kArr[2] + "$" + kArr[3] + "$" + record
