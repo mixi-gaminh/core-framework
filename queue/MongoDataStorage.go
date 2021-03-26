@@ -3,6 +3,7 @@ package queue
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 
 	logger "github.com/mixi-gaminh/core-framework/logs"
@@ -34,6 +35,7 @@ func (q *Queue) Save(ctx context.Context, msg []string) {
 	}
 	kArr := strings.Split(collection, "@")
 	if len(kArr) < 4 {
+		fmt.Println("SAVE ", record, " to collection ", collection)
 		mgodb.SaveMongoMQ(dbName, collection, record, persistData)
 		return
 	}
