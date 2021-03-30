@@ -22,14 +22,14 @@ func (c *FileStorage) PutObject(ctx context.Context, bucketID, contentType, path
 	opts.ContentType = contentType
 	// ioReader := bytes.NewReader(fileStorage.Source)
 	// Upload the file with PutObject
-	go func(src io.Reader, bucketID, path string, size int64, opts minio.PutObjectOptions) {
-		n, err := MinioClient.PutObject(ctx, bucketID, path, src, size, opts)
-		if err != nil {
-			logger.ERROR("Failed Upload the file with PutObject - err:", err)
-		} else {
-			log.Printf("Successfully uploaded %s of size %d\n", path, n.Size)
-		}
-	}(src, bucketID, path, size, opts)
+	//go func(src io.Reader, bucketID, path string, size int64, opts minio.PutObjectOptions) {
+	n, err := MinioClient.PutObject(ctx, bucketID, path, src, size, opts)
+	if err != nil {
+		logger.ERROR("Failed Upload the file with PutObject - err:", err)
+	} else {
+		log.Printf("Successfully uploaded %s of size %d\n", path, n.Size)
+	}
+	//}(src, bucketID, path, size, opts)
 	infoMediaUpload := map[string]interface{}{
 		"id":           path,
 		"content_type": strings.Split(contentType, ";")[0],
