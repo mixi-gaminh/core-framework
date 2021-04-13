@@ -223,3 +223,15 @@ func (c *Mgo) UpdateMany(DBName string, collection, fieldUpdate string, valueUpd
 	}
 	return nil
 }
+
+//IncrementMongo - IncrementMongo
+func (c *Mgo) IncrementMongo(DBName, collection string, recordID interface{}, incData map[string]int) error {
+	update := bson.M{"$inc": incData}
+
+	err := selectSession().DB(DBName).C(collection).UpdateId(recordID, update)
+	if err != nil {
+		logger.ERROR(err)
+		return err
+	}
+	return nil
+}
