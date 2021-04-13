@@ -129,15 +129,21 @@ func (c *Mgo) FindOneByField(DBName string, collection string, fieldKey string, 
 // FindUserByField - FindUserByField
 func (c *Mgo) FindUserByField(DBName string, collection string, fieldKey string, fieldValue interface{}) map[string]interface{} {
 	var result map[string]interface{}
-	// selector := bson.M{fieldKey: bson.M{"$regex": fieldValue}}
 	err := selectSession().DB(DBName).C(collection).Find(bson.M{fieldKey: fieldValue}).One(&result)
-	// err := selectSession().DB(DBName).C(collection).Find(bson.M{"user_info": bson.M{"email": fieldValue}}).One(&result)
-
 	if err == mgo.ErrNotFound || err != nil {
 		fmt.Println(err)
 		return nil
 	}
 	return result
+}
+
+// UpdateOneByField - UpdateOneByField
+func (c *Mgo) UpdateOneByField(DBName string, collection string, fieldKey string, fieldValue interface{}, data interface{}) error {
+	_, err := selectSession().DB(DBName).C(collection).Upsert(bson.M{fieldKey: fieldValue}, data)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // GetAllRecordInCollection - GetAllRecordInCollection
