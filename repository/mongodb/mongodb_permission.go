@@ -84,7 +84,7 @@ func (c *Mgo) UpdateByField(DBName string, collection string, id string, fieldUp
 }
 
 //DeleteInMongoByField - Delete Data by field in MongoDB
-func (c *Mgo) DeleteInMongoByField(DBName string, collection, field, recordID string) error {
+func (c *Mgo) DeleteInMongoByField(DBName string, collection, field string, recordID interface{}) error {
 	err := selectSession().DB(DBName).C(collection).Remove(bson.M{field: recordID})
 	if err != nil {
 		return err
