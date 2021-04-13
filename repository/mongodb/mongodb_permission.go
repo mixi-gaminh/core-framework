@@ -71,9 +71,13 @@ func (c *Mgo) RetrieveManyByField(DBName string, collection string, fieldNameFil
 }
 
 // UpdateByField - UpdateByField
-func (c *Mgo) UpdateByField(DBName string, collection string, id string, fieldUpdate string, valueUpdate interface{}) error {
-	filter := bson.M{"_id": bson.M{"$eq": id}}
-	update := bson.M{"$set": bson.M{fieldUpdate: valueUpdate}}
+func (c *Mgo) UpdateByField(DBName string, collection string, fieldKey string, fieldValue interface{}, data map[string]interface{}) error {
+	filter := bson.M{fieldKey: bson.M{"$eq": fieldValue}}
+	update := make(bson.M)
+	for key, val := range data {
+		update[key] = val
+	}
+	update = bson.M{"$set": update}
 
 	err := selectSession().DB(DBName).C(collection).Update(filter, update)
 	if err != nil {
@@ -137,8 +141,8 @@ func (c *Mgo) FindUserByField(DBName string, collection string, fieldKey string,
 	return result
 }
 
-// UpdateOneByField - UpdateOneByField
-func (c *Mgo) UpdateOneByField(DBName string, collection string, fieldKey string, fieldValue interface{}, data interface{}) error {
+// UpsertOneByField - UpsertOneByField
+func (c *Mgo) UpsertOneByField(DBName string, collection string, fieldKey string, fieldValue interface{}, data interface{}) error {
 	_, err := selectSession().DB(DBName).C(collection).Upsert(bson.M{fieldKey: fieldValue}, data)
 	if err != nil {
 		return err
