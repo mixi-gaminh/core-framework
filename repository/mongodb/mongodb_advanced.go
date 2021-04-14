@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"strconv"
@@ -9,6 +10,7 @@ import (
 	"time"
 
 	logger "github.com/mixi-gaminh/core-framework/logs"
+	mongoModel "github.com/mixi-gaminh/core-framework/model/mongodb"
 
 	"gopkg.in/mgo.v2/bson"
 )
@@ -389,4 +391,57 @@ func (c *Mgo) MatchDataByLogicClauseAndSort(DBName string, collection string, qu
 	}
 
 	return ret, total, nil
+}
+
+// Statistics - Statistics
+func (c *Mgo) Statistics(DBName string, collection string, inputData *mongoModel.Statistics) ([]map[string]interface{}, error) {
+	match := map[string]interface{}{}
+	group := map[string]interface{}{}
+
+	// Initial conditions
+	conditions := inputData.Conditions
+	for _, item := range conditions {
+		conditionItem := createConditionItem(item)
+		match[item.FieldName] = conditionItem
+	}
+
+	// Initial groupby
+	group["_id"] = createGroupBy(inputData.Result.GroupBy)
+	fields := inputData.Result.Fields
+	for _, item := range fields {
+		group[item.FieldName] = map[string]interface{}{
+			item.Operator: item.Column,
+		}
+	}
+
+	others := inputData.Others
+	sortField := others.Sort.Field
+	sortType := others.Sort.Type
+	limit := others.Limit
+
+	// Execute query
+	var result []map[string]interface{}
+	err := selectSession().DB(DBName).C(collection).Pipe([]bson.M{{"$match": match}, {"$group": group}}).All(&result)
+	if err != nil {
+		return nil, err
+	}
+	if len(result) > 0 {
+		for index, item := range result {
+			// remove '_id' but keep it's properties
+			keyGroup, OK := item["_id"].(map[string]interface{})
+			if !OK {
+				return nil, errors.New("_id parse failed")
+			}
+			for key, value := range keyGroup {
+				result[index][key] = value
+			}
+			delete(result[index], "_id")
+		}
+		result, err = sortStatisticsResult(result, sortField, sortType, limit)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return result, nil
 }
