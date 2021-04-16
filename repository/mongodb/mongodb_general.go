@@ -235,3 +235,18 @@ func (c *Mgo) IncrementMongo(DBName, collection string, recordID interface{}, in
 	}
 	return nil
 }
+
+func (c *Mgo) IncrementMongoByCondition(DBName, collection string, query, incData interface{}) interface{} {
+	var result bson.M
+	changeInDocument := mgo.Change{
+		Update:    bson.M{"$inc": incData},
+		ReturnNew: true,
+	}
+	_, err := selectSession().DB(DBName).C(collection).Find(query.(bson.M)).Apply(changeInDocument, &result)
+	//Handle error
+	if err != nil {
+		logger.ERROR(err)
+		return err
+	}
+	return result
+}
