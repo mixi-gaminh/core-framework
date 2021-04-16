@@ -236,7 +236,7 @@ func (c *Mgo) IncrementMongo(DBName, collection string, recordID interface{}, in
 	return nil
 }
 
-func (c *Mgo) IncrementMongoByCondition(DBName, collection string, query, incData interface{}) interface{} {
+func (c *Mgo) IncrementMongoByCondition(DBName, collection string, query, incData interface{}) (interface{}, bool) {
 	var result bson.M
 	changeInDocument := mgo.Change{
 		Update:    bson.M{"$inc": incData},
@@ -246,7 +246,7 @@ func (c *Mgo) IncrementMongoByCondition(DBName, collection string, query, incDat
 	//Handle error
 	if err != nil {
 		logger.ERROR(err)
-		return err
+		return err, false
 	}
-	return result
+	return result, true
 }
