@@ -242,7 +242,7 @@ func (c *Mgo) IncrementMongoByCondition(DBName, collection string, query, incDat
 		Update:    bson.M{"$inc": incData},
 		ReturnNew: true,
 	}
-	_, err := selectSession().DB(DBName).C(collection).Find(query.(bson.M)).Apply(changeInDocument, &result)
+	_, err := selectSession().DB(DBName).C(collection).Find(query).Apply(changeInDocument, &result)
 	//Handle error
 	if err != nil {
 		logger.ERROR(err)
