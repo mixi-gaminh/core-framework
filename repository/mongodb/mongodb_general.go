@@ -250,3 +250,12 @@ func (c *Mgo) IncrementMongoByCondition(DBName, collection string, query, incDat
 	}
 	return result, true
 }
+
+func (c *Mgo) DeleteAllByField(DBName, collection, field string, value interface{}) error {
+	_, err := selectSession().DB(DBName).C(collection).RemoveAll(bson.M{field: value})
+	if err != nil {
+		logger.ERROR(err)
+	}
+
+	return err
+}
