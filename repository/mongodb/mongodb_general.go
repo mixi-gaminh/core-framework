@@ -201,6 +201,17 @@ func (c *Mgo) FindAllInMongo(DBName string, collection string) []string {
 	return retData
 }
 
+//FindAllInMongoByField - Find All Data by Field from Mongo DB - Only Searching in user_info
+func (c *Mgo) FindAllInMongoByField(DBName string, collection string, fieldKey string, fieldValue string) []map[string]interface{} {
+	var result []map[string]interface{}
+	err := selectSession().DB(DBName).C(collection).Find(bson.M{fieldKey: fieldValue}).All(&result)
+	if err != nil {
+		fmt.Println(err)
+		return nil
+	}
+	return result
+}
+
 //FindAllRegexByID - Find All Data from Mongo DB by ID and Regex
 func (c *Mgo) FindAllRegexByID(DBName string, collection, id string) []map[string]interface{} {
 	var result []map[string]interface{}

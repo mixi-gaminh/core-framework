@@ -96,18 +96,6 @@ func (c *Mgo) DeleteInMongoByField(DBName string, collection, field string, reco
 	return nil
 }
 
-//FindAllInMongoByField - Find All Data by Field from Mongo DB - Only Searching in user_info
-func (c *Mgo) FindAllInMongoByField(DBName string, collection string, fieldKey string, fieldValue string) []map[string]interface{} {
-	var result []map[string]interface{}
-	fieldKey = "user_info." + fieldKey
-	err := selectSession().DB(DBName).C(collection).Find(bson.M{fieldKey: fieldValue}).All(&result)
-	if err != nil {
-		fmt.Println(err)
-		return nil
-	}
-	return result
-}
-
 // FindByUsername - FindByUsername
 func (c *Mgo) FindByUsername(DBName string, collection string, username string) *model.UserProfile {
 	result := new(model.UserProfile)
