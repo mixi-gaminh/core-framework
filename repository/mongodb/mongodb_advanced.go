@@ -130,6 +130,10 @@ func (c *Mgo) SearchManyConditionInMongoWithPagging(DBName string, collection, f
 		}
 		andQuery = append(andQuery, selector)
 	}
+	findContent := bson.M{}
+	if len(andQuery) > 0 {
+		findContent = bson.M{"$and": andQuery}
+	}
 
 	if fieldSort == "" {
 		fieldSort = "updated_at"
@@ -143,12 +147,12 @@ func (c *Mgo) SearchManyConditionInMongoWithPagging(DBName string, collection, f
 	}
 
 	skip := (page - 1) * limit
-	total, err := selectSession().DB(DBName).C(collection).Find(bson.M{"$and": andQuery}).Count()
+	total, err := selectSession().DB(DBName).C(collection).Find(findContent).Count()
 	if err != nil {
 		logger.ERROR(err)
 		return nil, 0, err
 	}
-	err = selectSession().DB(DBName).C(collection).Find(bson.M{"$and": andQuery}).Sort(order + fieldSort).Skip(skip).Limit(limit).All(&retValue)
+	err = selectSession().DB(DBName).C(collection).Find(findContent).Sort(order + fieldSort).Skip(skip).Limit(limit).All(&retValue)
 	if err != nil || len(retValue) == 0 {
 		logger.ERROR(err)
 		return nil, 0, err
