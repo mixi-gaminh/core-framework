@@ -49,7 +49,8 @@ func main() {
 	redis.RedisConstructor(
 		viper.GetString(`redis.url`),
 		viper.GetInt(`redis.max_clients`),
-		viper.GetInt(`redis.min_idle`))
+		viper.GetInt(`redis.min_idle`),
+		viper.GetString(`redis.password`))
 	// initialize mongo constructor
 	mgodb.MongoDBConstructor(viper.GetStringSlice(`mongodb.url`),
 		viper.GetString(`mongodb.username`),

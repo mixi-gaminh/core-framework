@@ -28,11 +28,11 @@ var redisJSONWrite0 *rejonson.Client
 var RedisHost string
 
 // RedisConstructor - Create Redis Connection
-func (c *Cache) RedisConstructor(_url string, _maxClients, _minIdle int) {
+func (c *Cache) RedisConstructor(_url string, _maxClients, _minIdle int, _password string) {
 	RedisHost := _url
 	redisClientRead1 = redis.NewClient(&redis.Options{
 		Addr:         RedisHost,
-		Password:     "",
+		Password:     _password,
 		DB:           1,
 		PoolSize:     _maxClients,
 		PoolTimeout:  30 * time.Second,
@@ -44,7 +44,7 @@ func (c *Cache) RedisConstructor(_url string, _maxClients, _minIdle int) {
 	})
 	redisClientWrite1 = redis.NewClient(&redis.Options{
 		Addr:         RedisHost,
-		Password:     "",
+		Password:     _password,
 		DB:           1,
 		PoolSize:     _maxClients,
 		PoolTimeout:  30 * time.Second,
@@ -57,7 +57,7 @@ func (c *Cache) RedisConstructor(_url string, _maxClients, _minIdle int) {
 
 	redisClientRead0 = redis.NewClient(&redis.Options{
 		Addr:         RedisHost,
-		Password:     "",
+		Password:     _password,
 		DB:           0,
 		PoolSize:     _maxClients,
 		PoolTimeout:  30 * time.Second,
@@ -69,7 +69,7 @@ func (c *Cache) RedisConstructor(_url string, _maxClients, _minIdle int) {
 	})
 	redisClientWrite0 = redis.NewClient(&redis.Options{
 		Addr:         RedisHost,
-		Password:     "",
+		Password:     _password,
 		DB:           0,
 		PoolSize:     _maxClients,
 		PoolTimeout:  30 * time.Second,
