@@ -292,3 +292,12 @@ func (c *Mgo) DeleteAllByField(DBName, collection, field string, value interface
 
 	return err
 }
+
+func (c *Mgo) DeleteAllByCondition(DBName, collection string, conditions bson.M) error {
+	_, err := selectSession().DB(DBName).C(collection).RemoveAll(conditions)
+	if err != nil {
+		logger.ERROR(err)
+	}
+
+	return err
+}
