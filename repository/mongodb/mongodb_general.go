@@ -225,9 +225,9 @@ func (c *Mgo) FindByConditionWithPaging(DBName string, collection string, condit
 	skip := (page - 1) * limit
 	var result []interface{}
 	err = selectSession().DB(DBName).C(collection).Find(conditions).Skip(skip).Limit(limit).All(&result)
-	if err != nil || len(result) == 0 {
+	if err != nil {
 		fmt.Println(err)
-		return nil, 0, err
+		return nil, total, err
 	}
 
 	// Return result
