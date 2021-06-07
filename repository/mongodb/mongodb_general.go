@@ -234,6 +234,28 @@ func (c *Mgo) FindByConditionWithPaging(DBName string, collection string, condit
 	return result, total, nil
 }
 
+//FindByConditionWithPagingAndSorting - FindByConditionWithPagingAndSorting
+func (c *Mgo) FindByConditionWithPagingAndSorting(DBName string, collection string, conditions bson.M, page, limit int, fieldSort string) (interface{}, int, error) {
+	// Retrieve total
+	total, err := selectSession().DB(DBName).C(collection).Find(conditions).Count()
+	if err != nil {
+		fmt.Println(err)
+		return nil, 0, err
+	}
+
+	// Retrieve list of value
+	skip := (page - 1) * limit
+	var result []interface{}
+	err = selectSession().DB(DBName).C(collection).Find(conditions).Sort(fieldSort).Skip(skip).Limit(limit).All(&result)
+	if err != nil {
+		fmt.Println(err)
+		return nil, total, err
+	}
+
+	// Return result
+	return result, total, nil
+}
+
 //FindAllRegexByID - Find All Data from Mongo DB by ID and Regex
 func (c *Mgo) FindAllRegexByID(DBName string, collection, id string) []map[string]interface{} {
 	var result []map[string]interface{}
