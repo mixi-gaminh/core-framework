@@ -290,6 +290,17 @@ func (c *Mgo) UpdateMany(DBName string, collection, fieldUpdate string, valueUpd
 	return nil
 }
 
+// UpdateManyByCondition - UpdateManyByCondition
+func (c *Mgo) UpdateManyByCondition(DBName string, collection, fieldUpdate string, valueUpdate interface{}, conditions bson.M) error {
+	update := bson.M{"$set": bson.M{fieldUpdate: valueUpdate}}
+	_, err := selectSession().DB(DBName).C(collection).UpdateAll(conditions, update)
+	if err != nil {
+		logger.ERROR(err)
+		return err
+	}
+	return nil
+}
+
 //IncrementMongo - IncrementMongo
 func (c *Mgo) IncrementMongo(DBName, collection string, recordID interface{}, incData map[string]int) error {
 	update := bson.M{"$inc": incData}
