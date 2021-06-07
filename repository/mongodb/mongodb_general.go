@@ -212,6 +212,17 @@ func (c *Mgo) FindAllInMongoByField(DBName string, collection string, fieldKey s
 	return result
 }
 
+//FindAllByCondition - FindAllByCondition
+func (c *Mgo) FindAllByCondition(DBName string, collection string, conditions, selections bson.M) (interface{}, error) {
+	var result []interface{}
+	err := selectSession().DB(DBName).C(collection).Find(conditions).Select(selections).All(&result)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	return result, nil
+}
+
 //FindByConditionWithPaging - FindByConditionWithPaging
 func (c *Mgo) FindByConditionWithPaging(DBName string, collection string, conditions bson.M, page, limit int) (interface{}, int, error) {
 	// Retrieve total
@@ -291,6 +302,7 @@ func (c *Mgo) IncrementMongo(DBName, collection string, recordID interface{}, in
 	return nil
 }
 
+// IncrementMongoByCondition - IncrementMongoByCondition
 func (c *Mgo) IncrementMongoByCondition(DBName, collection string, query, incData interface{}) (interface{}, bool) {
 	var result bson.M
 	changeInDocument := mgo.Change{
@@ -306,6 +318,7 @@ func (c *Mgo) IncrementMongoByCondition(DBName, collection string, query, incDat
 	return result, true
 }
 
+// DeleteAllByField - DeleteAllByField
 func (c *Mgo) DeleteAllByField(DBName, collection, field string, value interface{}) error {
 	_, err := selectSession().DB(DBName).C(collection).RemoveAll(bson.M{field: value})
 	if err != nil {
@@ -315,6 +328,7 @@ func (c *Mgo) DeleteAllByField(DBName, collection, field string, value interface
 	return err
 }
 
+// DeleteAllByCondition - DeleteAllByCondition
 func (c *Mgo) DeleteAllByCondition(DBName, collection string, conditions bson.M) error {
 	_, err := selectSession().DB(DBName).C(collection).RemoveAll(conditions)
 	if err != nil {
