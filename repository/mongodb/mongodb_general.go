@@ -291,8 +291,8 @@ func (c *Mgo) UpdateMany(DBName string, collection, fieldUpdate string, valueUpd
 }
 
 // UpdateManyByCondition - UpdateManyByCondition
-func (c *Mgo) UpdateManyByCondition(DBName string, collection, fieldUpdate string, valueUpdate interface{}, conditions bson.M) error {
-	update := bson.M{"$set": bson.M{fieldUpdate: valueUpdate}}
+func (c *Mgo) UpdateManyByCondition(DBName, collection string, updateContent bson.M, conditions bson.M) error {
+	update := bson.M{"$set": updateContent}
 	_, err := selectSession().DB(DBName).C(collection).UpdateAll(conditions, update)
 	if err != nil {
 		logger.ERROR(err)
