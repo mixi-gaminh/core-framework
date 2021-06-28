@@ -228,7 +228,6 @@ func (c *Mgo) FindOneByCondition(DBName string, collection string, conditions, s
 	var result map[string]interface{}
 	err := selectSession().DB(DBName).C(collection).Find(conditions).Select(selections).One(&result)
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 	return result, nil
