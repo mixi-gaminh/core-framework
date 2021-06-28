@@ -201,7 +201,7 @@ func (c *Mgo) FindAllInMongo(DBName string, collection string) []string {
 	return retData
 }
 
-//FindAllInMongoByField - Find All Data by Field from Mongo DB - Only Searching in user_info
+// FindAllInMongoByField - Find All Data by Field from Mongo DB - Only Searching in user_info
 func (c *Mgo) FindAllInMongoByField(DBName string, collection string, fieldKey string, fieldValue string) []map[string]interface{} {
 	var result []map[string]interface{}
 	err := selectSession().DB(DBName).C(collection).Find(bson.M{fieldKey: fieldValue}).All(&result)
@@ -212,10 +212,21 @@ func (c *Mgo) FindAllInMongoByField(DBName string, collection string, fieldKey s
 	return result
 }
 
-//FindAllByCondition - FindAllByCondition
+// FindAllByCondition - FindAllByCondition
 func (c *Mgo) FindAllByCondition(DBName string, collection string, conditions, selections bson.M) (interface{}, error) {
 	var result []interface{}
 	err := selectSession().DB(DBName).C(collection).Find(conditions).Select(selections).All(&result)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+	return result, nil
+}
+
+// FindOneByCondition - FindOneByCondition
+func (c *Mgo) FindOneByCondition(DBName string, collection string, conditions, selections bson.M) (map[string]interface{}, error) {
+	var result map[string]interface{}
+	err := selectSession().DB(DBName).C(collection).Find(conditions).Select(selections).One(&result)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
