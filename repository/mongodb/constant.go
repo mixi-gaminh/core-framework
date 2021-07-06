@@ -90,9 +90,6 @@ func (c *Mgo) checkSessionForReconnect(MongoHost []string, username, password st
 			if err := db[i].Ping(); err != nil {
 				fmt.Println("checkSessionForReconnect - Lost connection")
 
-				// Close the disconnected session
-				db[i].Close()
-
 				// Reconnect with new session
 				_db, err := mgo.DialWithInfo(mongoDBDialInfo)
 				if err != nil {
