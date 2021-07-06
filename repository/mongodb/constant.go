@@ -58,9 +58,42 @@ func (c *Mgo) MongoDBConstructor(MongoHost []string, username, password string) 
 		logger.ERROR("MONGO PING ERROR: ", err)
 		os.Exit(-1)
 	}
-	//logger.Constructor(logger.IsDevelopment)
+
+	// Go routine check mongodb connection for reconnect machenism
+	go c.checkSessionForReconnect(MongoHost, username, password)
+
 	logger.NewLogger()
 	logger.INFO("MongoDB Constructor Successfull")
+}
+
+func (c *Mgo) checkSessionForReconnect(MongoHost []string, username, password string) {
+	// Check connection in every 60 seconds
+	time.Sleep(60 * time.Second)
+
+	// Initial
+	mongoDBDialInfo := &mgo.DialInfo{
+		Addrs:    MongoHost,
+		Timeout:  60 * time.Second,
+		Username: username,
+		Password: password,
+	}
+
+	// Handle
+	for i := 0; i < maxSession; i++ {
+		if err := db[i].Ping(); err != nil {
+			// Close the disconnected session
+			db[i].Close()
+
+			// Reconnect with new session
+			_db, err := mgo.DialWithInfo(mongoDBDialInfo)
+			if err != nil {
+				logger.ERROR("MONGO RECONNECTION FAILED:", err)
+			} else {
+				logger.ERROR("MONGO RECONNECTION SUCCESSFULLY, session", i)
+				db[i] = _db
+			}
+		}
+	}
 }
 
 // Close - Close
