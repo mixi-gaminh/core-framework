@@ -88,7 +88,7 @@ func (c *Mgo) checkSessionForReconnect(MongoHost []string, username, password st
 				// Reconnect with new session
 				_db, err := mgo.DialWithInfo(mongoDBDialInfo)
 				if err != nil {
-					fmt.Println("checkSessionForReconnect - Err at mgo.DialWithInfo(mongoDBDialInfo):", err)
+					fmt.Println("checkSessionForReconnect - Reconnect Failed, err:", err)
 				} else {
 					fmt.Println("checkSessionForReconnect - Reconnect successfully, session:", i)
 					db[i] = _db
