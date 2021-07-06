@@ -72,38 +72,40 @@ func (c *Mgo) MongoDBConstructor(MongoHost []string, username, password string) 
 }
 
 func (c *Mgo) checkSessionForReconnect(MongoHost []string, username, password string) {
-	// Check connection in every 60 seconds
-	time.Sleep(60 * time.Second)
-	fmt.Println("checkSessionForReconnect - Begin")
+	for {
+		// Check connection in every 60 seconds
+		time.Sleep(60 * time.Second)
+		fmt.Println("checkSessionForReconnect - Begin")
 
-	// Initial
-	mongoDBDialInfo := &mgo.DialInfo{
-		Addrs:    MongoHost,
-		Timeout:  60 * time.Second,
-		Username: username,
-		Password: password,
-	}
-
-	// Handle
-	for i := 0; i < maxSession; i++ {
-		if err := db[i].Ping(); err != nil {
-			fmt.Println("checkSessionForReconnect - Lost connection")
-
-			// Close the disconnected session
-			db[i].Close()
-
-			// Reconnect with new session
-			_db, err := mgo.DialWithInfo(mongoDBDialInfo)
-			if err != nil {
-				fmt.Println("checkSessionForReconnect - Err at mgo.DialWithInfo(mongoDBDialInfo):", err)
-				logger.ERROR("MONGO RECONNECTION FAILED:", err)
-			} else {
-				logger.ERROR("MONGO RECONNECTION SUCCESSFULLY, session", i)
-				fmt.Println("checkSessionForReconnect - Reconnect successful")
-				db[i] = _db
-			}
+		// Initial
+		mongoDBDialInfo := &mgo.DialInfo{
+			Addrs:    MongoHost,
+			Timeout:  60 * time.Second,
+			Username: username,
+			Password: password,
 		}
-		fmt.Println("checkSessionForReconnect - Session OK:", i)
+
+		// Handle
+		for i := 0; i < maxSession; i++ {
+			if err := db[i].Ping(); err != nil {
+				fmt.Println("checkSessionForReconnect - Lost connection")
+
+				// Close the disconnected session
+				db[i].Close()
+
+				// Reconnect with new session
+				_db, err := mgo.DialWithInfo(mongoDBDialInfo)
+				if err != nil {
+					fmt.Println("checkSessionForReconnect - Err at mgo.DialWithInfo(mongoDBDialInfo):", err)
+					logger.ERROR("MONGO RECONNECTION FAILED:", err)
+				} else {
+					logger.ERROR("MONGO RECONNECTION SUCCESSFULLY, session", i)
+					fmt.Println("checkSessionForReconnect - Reconnect successful")
+					db[i] = _db
+				}
+			}
+			fmt.Println("checkSessionForReconnect - Session OK:", i)
+		}
 	}
 }
 
