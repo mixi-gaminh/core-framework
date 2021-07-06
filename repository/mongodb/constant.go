@@ -41,7 +41,6 @@ var db [maxSession]*mgo.Session
 
 // MongoDBConstructor - MongoDBConstructor
 func (c *Mgo) MongoDBConstructor(MongoHost []string, username, password string) {
-	fmt.Println("MongoDBConstructor - Begin")
 	for i := 0; i < maxSession; i++ {
 		mongoDBDialInfo := &mgo.DialInfo{
 			Addrs:    MongoHost,
@@ -51,14 +50,12 @@ func (c *Mgo) MongoDBConstructor(MongoHost []string, username, password string) 
 		}
 		_db, err := mgo.DialWithInfo(mongoDBDialInfo)
 		if err != nil {
-			fmt.Println("MongoDBConstructor - err at mgo.DialWithInfo(mongoDBDialInfo):", err)
 			logger.ERROR("MONGO ESTABLISH CONNECTION ERROR: ", err)
 			os.Exit(-1)
 		}
 		db[i] = _db
 	}
 	if err := c.Ping(); err != nil {
-		fmt.Println("MongoDBConstructor - err at c.Ping():", err)
 		logger.ERROR("MONGO PING ERROR: ", err)
 		os.Exit(-1)
 	}
@@ -66,7 +63,6 @@ func (c *Mgo) MongoDBConstructor(MongoHost []string, username, password string) 
 	// Go routine check mongodb connection for reconnect machenism
 	go c.checkSessionForReconnect(MongoHost, username, password)
 
-	fmt.Println("MongoDBConstructor - Connect Successful")
 	logger.NewLogger()
 	logger.INFO("MongoDB Constructor Successfull")
 }
@@ -75,7 +71,6 @@ func (c *Mgo) checkSessionForReconnect(MongoHost []string, username, password st
 	for {
 		// Check connection in every 60 seconds
 		time.Sleep(60 * time.Second)
-		fmt.Println("checkSessionForReconnect - Begin")
 
 		// Initial
 		mongoDBDialInfo := &mgo.DialInfo{
@@ -88,20 +83,17 @@ func (c *Mgo) checkSessionForReconnect(MongoHost []string, username, password st
 		// Handle
 		for i := 0; i < maxSession; i++ {
 			if err := db[i].Ping(); err != nil {
-				fmt.Println("checkSessionForReconnect - Lost connection")
+				fmt.Println("checkSessionForReconnect - Lost connection, session:", i)
 
 				// Reconnect with new session
 				_db, err := mgo.DialWithInfo(mongoDBDialInfo)
 				if err != nil {
 					fmt.Println("checkSessionForReconnect - Err at mgo.DialWithInfo(mongoDBDialInfo):", err)
-					logger.ERROR("MONGO RECONNECTION FAILED:", err)
 				} else {
-					logger.ERROR("MONGO RECONNECTION SUCCESSFULLY, session", i)
-					fmt.Println("checkSessionForReconnect - Reconnect successful")
+					fmt.Println("checkSessionForReconnect - Reconnect successfully, session:", i)
 					db[i] = _db
 				}
 			}
-			fmt.Println("checkSessionForReconnect - Session OK:", i)
 		}
 	}
 }
