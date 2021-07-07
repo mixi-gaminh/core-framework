@@ -1,7 +1,7 @@
 package nats
 
 import (
-	"log"
+	"fmt"
 	"strings"
 	"time"
 
@@ -54,19 +54,20 @@ func (n *NATS) NATSConstructor(_memberID, _typeReqRepl, _active, _natsURL, _queu
 
 // SetupConnOptions - SetupConnOptions
 func (n *NATS) SetupConnOptions(opts []nats.Option) []nats.Option {
-	totalWait := 10 * time.Minute
-	reconnectDelay := time.Second
+	totalWait := 24 * 60 * 60
+	reconnectDelay := 2 * time.Second
 
 	opts = append(opts, nats.ReconnectWait(reconnectDelay))
-	opts = append(opts, nats.MaxReconnects(int(totalWait/reconnectDelay)))
+	opts = append(opts, nats.MaxReconnects(totalWait))
 	opts = append(opts, nats.DisconnectErrHandler(func(nc *nats.Conn, err error) {
-		log.Printf("Disconnected due to: %s, will attempt reconnects for %.0fm", err, totalWait.Minutes())
+		fmt.Println("Got disconnected!\nError Detail:", err)
+		fmt.Println("Reconnect attempt in", totalWait, "seconds")
 	}))
 	opts = append(opts, nats.ReconnectHandler(func(nc *nats.Conn) {
-		log.Printf("Reconnected [%s]", nc.ConnectedUrl())
+		fmt.Println("Got reconnected to", nc.ConnectedUrl())
 	}))
 	opts = append(opts, nats.ClosedHandler(func(nc *nats.Conn) {
-		log.Fatalf("Exiting: %v", nc.LastError())
+		fmt.Println("Connection closed. Reason:", nc.LastError())
 	}))
 	return opts
 }
