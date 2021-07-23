@@ -449,3 +449,29 @@ func (c *Mgo) Statistics(DBName string, collection string, inputData *mongoModel
 
 	return result, nil
 }
+
+// BasicStatistics - BasicStatistics
+func (c *Mgo) BasicStatistics(DBName string, collection string, match, project, group, sort map[string]interface{}) ([]map[string]interface{}, error) {
+	// Initial
+	pipeline := []bson.M{}
+	if match != nil {
+		pipeline = append(pipeline, bson.M{"$match": match})
+	}
+	if project != nil {
+		pipeline = append(pipeline, bson.M{"$project": project})
+	}
+	if group != nil {
+		pipeline = append(pipeline, bson.M{"$group": group})
+	}
+	if sort != nil {
+		pipeline = append(pipeline, bson.M{"$sort": sort})
+	}
+
+	// Handle
+	var result []map[string]interface{}
+	err := selectSession().DB(DBName).C(collection).Pipe(pipeline).All(&result)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
