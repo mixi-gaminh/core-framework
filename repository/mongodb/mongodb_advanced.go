@@ -451,7 +451,7 @@ func (c *Mgo) Statistics(DBName string, collection string, inputData *mongoModel
 }
 
 // BasicStatistics - BasicStatistics
-func (c *Mgo) BasicStatistics(DBName string, collection string, match, project, group, sort map[string]interface{}) ([]map[string]interface{}, error) {
+func (c *Mgo) BasicStatistics(DBName string, collection string, match, project, group, sort map[string]interface{}, limit int) ([]map[string]interface{}, error) {
 	// Initial
 	pipeline := []bson.M{}
 	if match != nil {
@@ -465,6 +465,9 @@ func (c *Mgo) BasicStatistics(DBName string, collection string, match, project, 
 	}
 	if sort != nil {
 		pipeline = append(pipeline, bson.M{"$sort": sort})
+	}
+	if limit > 0 {
+		pipeline = append(pipeline, bson.M{"$limit": limit})
 	}
 
 	// Handle
