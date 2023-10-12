@@ -1,6 +1,6 @@
 module github.com/mixi-gaminh/core-framework
 
-go 1.17
+go 1.18
 
 require (
 	github.com/centrifugal/centrifuge-go v0.7.0
