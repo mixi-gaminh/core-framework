@@ -6,7 +6,7 @@ import (
 
 	logger "github.com/mixi-gaminh/core-framework/logs"
 
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 )
 
 //SaveRecordPipeline - SaveRecordPipeline

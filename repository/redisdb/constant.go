@@ -3,7 +3,7 @@ package redis
 import (
 	"time"
 
-	redis "github.com/go-redis/redis/v8"
+	redis "github.com/redis/go-redis/v9"
 	logger "github.com/mixi-gaminh/core-framework/logs"
 	rejonson "github.com/mixi-gaminh/core-framework/repository/redisdb/lib_rejonson"
 )
